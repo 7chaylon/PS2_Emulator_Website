@@ -9,7 +9,6 @@ export function GameDetails({
   checkingSession,
   hasActiveSession,
   onPlay,
-  onStop,
   onClose,
 }) {
   if (!game) {
@@ -94,14 +93,6 @@ export function GameDetails({
 
         <button className="ghost" disabled>
           Detalhes
-        </button>
-
-        <button
-          className="danger"
-          onClick={onStop}
-          disabled={loading || checkingSession || !hasActiveSession}
-        >
-          Parar sessão
         </button>
       </div>
     </aside>

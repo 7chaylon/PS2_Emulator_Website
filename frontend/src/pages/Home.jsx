@@ -1,35 +1,34 @@
-import React, { useEffect, useMemo, useState } from 'react';
-
-import { api } from '../lib/api';
-import { DashboardTopbar } from '../components/layout/DashboardTopbar';
-import { GameCatalog } from '../components/games/GameCatalog';
-import { GameDetails } from '../components/games/GameDetails';
-import { MessageBox } from '../components/ui/MessageBox';
+import React, { useEffect, useMemo, useState } from "react";
+import { GameModeOverlay } from "../components/games/GameModeOverlay";
+import { api } from "../lib/api";
+import { DashboardTopbar } from "../components/layout/DashboardTopbar";
+import { GameCatalog } from "../components/games/GameCatalog";
+import { GameDetails } from "../components/games/GameDetails";
+import { MessageBox } from "../components/ui/MessageBox";
 
 export default function Home({ user, onLogout, onOpenAdmin }) {
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [gameSession, setGameSession] = useState(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [loadingGames, setLoadingGames] = useState(true);
   const [checkingSession, setCheckingSession] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const [gameModeOpen, setGameModeOpen] = useState(false);
+  const [gameModeGame, setGameModeGame] = useState(null);
   const hasActiveSession = useMemo(() => {
     return (
-      gameSession?.status === 'starting' ||
-      gameSession?.status === 'running'
+      gameSession?.status === "starting" || gameSession?.status === "running"
     );
   }, [gameSession]);
-
   const currentGame = gameSession?.game || selectedGame;
 
   useEffect(() => {
     async function loadInitialData() {
       try {
         const [gamesData, sessionData] = await Promise.all([
-          api('/api/games'),
-          api('/api/game/session'),
+          api("/api/games"),
+          api("/api/game/session"),
         ]);
 
         const loadedGames = gamesData.games || [];
@@ -39,16 +38,18 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
           setGameSession({
             status: sessionData.session.status,
             gameSessionId: sessionData.session.id,
-            streamId: sessionData.session.streamId || sessionData.session.stream_id,
+            streamId:
+              sessionData.session.streamId || sessionData.session.stream_id,
             game: sessionData.session.game || null,
-            createdAt: sessionData.session.createdAt || sessionData.session.created_at,
+            createdAt:
+              sessionData.session.createdAt || sessionData.session.created_at,
           });
         } else {
           setSelectedGame(loadedGames[0] || null);
         }
       } catch (err) {
-        console.error('Erro ao carregar dados iniciais:', err);
-        setMessage(err.message || 'Erro ao carregar dados iniciais.');
+        console.error("Erro ao carregar dados iniciais:", err);
+        setMessage(err.message || "Erro ao carregar dados iniciais.");
       } finally {
         setLoadingGames(false);
         setCheckingSession(false);
@@ -57,14 +58,56 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
 
     loadInitialData();
   }, []);
+  async function enterFullscreen() {
+    const element = document.documentElement;
 
+    if (element.requestFullscreen) {
+      await element.requestFullscreen();
+    }
+  }
+
+  async function exitFullscreen() {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      await document.exitFullscreen();
+    }
+  }
+
+  async function startGameMode(game) {
+    setGameModeGame(game);
+    setGameModeOpen(true);
+
+    try {
+      await enterFullscreen();
+    } catch (error) {
+      console.warn("Não foi possível entrar em fullscreen:", error);
+    }
+
+    await play(game);
+  }
+
+  async function exitGameMode() {
+    try {
+      if (gameSession?.gameSessionId) {
+        await stop();
+      }
+    } finally {
+      setGameModeOpen(false);
+      setGameModeGame(null);
+
+      try {
+        await exitFullscreen();
+      } catch (error) {
+        console.warn("Não foi possível sair do fullscreen:", error);
+      }
+    }
+  }
   async function play(game) {
-    setMessage('');
+    setMessage("");
     setLoading(true);
 
     try {
-      const data = await api('/api/game/play', {
-        method: 'POST',
+      const data = await api("/api/game/play", {
+        method: "POST",
         body: JSON.stringify({
           gameId: game.id,
         }),
@@ -91,11 +134,7 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
 
       const details = err.hostMessage || err.host || err.error || err.details;
 
-      setMessage(
-        details
-          ? `${err.message} Detalhes: ${details}`
-          : err.message
-      );
+      setMessage(details ? `${err.message} Detalhes: ${details}` : err.message);
     } finally {
       setLoading(false);
     }
@@ -103,39 +142,35 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
 
   async function stop() {
     if (!gameSession?.gameSessionId) {
-      setMessage('Nenhuma sessão ativa para encerrar.');
+      setMessage("Nenhuma sessão ativa para encerrar.");
       return;
     }
 
-    setMessage('');
+    setMessage("");
     setLoading(true);
 
     try {
-      await api('/api/game/stop', {
-        method: 'POST',
+      await api("/api/game/stop", {
+        method: "POST",
         body: JSON.stringify({
           gameSessionId: gameSession.gameSessionId,
         }),
       });
 
       setGameSession(null);
-      setMessage('Sessão encerrada.');
+      setMessage("Sessão encerrada.");
     } catch (err) {
       const details = err.hostMessage || err.host || err.error || err.details;
 
-      setMessage(
-        details
-          ? `${err.message} Detalhes: ${details}`
-          : err.message
-      );
+      setMessage(details ? `${err.message} Detalhes: ${details}` : err.message);
     } finally {
       setLoading(false);
     }
   }
 
   async function logout() {
-    await api('/api/auth/logout', {
-      method: 'POST',
+    await api("/api/auth/logout", {
+      method: "POST",
     });
 
     onLogout();
@@ -158,9 +193,7 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
       </section>
 
       <section className="catalog-toolbar">
-        <span className="catalog-count">
-          {games.length} jogos encontrados
-        </span>
+        <span className="catalog-count">{games.length} jogos encontrados</span>
       </section>
 
       {(loadingGames || checkingSession) && (
@@ -169,11 +202,7 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
         </MessageBox>
       )}
 
-      {message && (
-        <MessageBox variant="success">
-          {message}
-        </MessageBox>
-      )}
+      {message && <MessageBox variant="success">{message}</MessageBox>}
 
       <section className="games-shell">
         <GameCatalog
@@ -189,13 +218,19 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
           loading={loading}
           checkingSession={checkingSession}
           hasActiveSession={hasActiveSession}
-          onPlay={play}
-          onStop={stop}
+          onPlay={startGameMode}
           onClose={() => {
             if (!hasActiveSession) {
               setSelectedGame(null);
             }
           }}
+        />
+        <GameModeOverlay
+          open={gameModeOpen}
+          game={gameModeGame || currentGame}
+          gameSession={gameSession}
+          loading={loading}
+          onExit={exitGameMode}
         />
       </section>
     </main>

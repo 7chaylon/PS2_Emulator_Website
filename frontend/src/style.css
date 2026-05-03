@@ -1175,3 +1175,148 @@ button:hover:not(:disabled) {
   font-weight: 900;
   font-size: 13px;
 }
+.game-mode-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  color: white;
+}
+
+.game-mode-player {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(66, 230, 129, 0.08), transparent 34%),
+    #000;
+}
+
+.game-mode-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.game-mode-placeholder img {
+  width: min(220px, 32vw);
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  margin: 0 auto 28px;
+  opacity: 0.86;
+  filter: drop-shadow(0 30px 80px rgba(0, 0, 0, 0.8));
+}
+
+.game-mode-placeholder span {
+  display: inline-flex;
+  margin-bottom: 12px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.game-mode-placeholder h1 {
+  margin: 0;
+  font-size: clamp(36px, 6vw, 72px);
+  letter-spacing: -0.07em;
+}
+
+.game-mode-placeholder p {
+  max-width: 520px;
+  margin: 12px auto 0;
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.5;
+}
+
+.game-mode-placeholder small {
+  display: inline-flex;
+  margin-top: 22px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.game-mode-placeholder small strong {
+  color: white;
+}
+
+.game-mode-dev-exit {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 10001;
+  padding: 9px 12px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+  font-weight: 800;
+  backdrop-filter: blur(12px);
+}
+
+.game-mode-dev-exit:hover {
+  color: white;
+  background: rgba(255, 95, 115, 0.18);
+  border-color: rgba(255, 95, 115, 0.36);
+}
+
+.exit-hold-indicator {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 10002;
+  width: min(320px, calc(100vw - 36px));
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  pointer-events: none;
+}
+
+.exit-hold-indicator span {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+  font-size: 13px;
+  text-align: center;
+  font-weight: 800;
+}
+
+.exit-hold-indicator > div {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.exit-hold-indicator > div > div {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(66, 230, 129, 0.7), var(--green));
+  transition: width 0.08s linear;
+}
+html.game-mode-active,
+body.game-mode-active {
+  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+}
+
+body.game-mode-active .dashboard-page {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.game-mode-overlay {
+  overflow: hidden;
+}
+
+.game-mode-player {
+  overflow: hidden;
+}
