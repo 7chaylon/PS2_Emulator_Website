@@ -1,0 +1,53 @@
+# Dependências
+node_modules/
+api/node_modules/
+frontend/node_modules/
+
+# Builds
+dist/
+build/
+api/dist/
+frontend/dist/
+host-backend/build/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+api/.env
+frontend/.env
+
+# Sessões geradas
+sessions/
+**/sessions/
+
+# PCSX2 / emulador local
+host-backend/pcsx2-runtime/
+host-backend/pcsx2/
+host-backend/pcsx2-template/bios/
+host-backend/pcsx2-template/memcards/
+host-backend/pcsx2-template/sstates/
+host-backend/pcsx2-template/cache/
+host-backend/pcsx2-template/logs/
+**/pcsx2-qt.exe
+**/*.dll
+
+# Jogos / ROMs / ISOs
+**/*.iso
+**/*.chd
+**/*.cso
+**/*.rom
+**/*.bin
+
+# Arquivos sensíveis
+host-backend/pcsx2-template/inis/secrets.ini
+
+# Logs/cache
+*.log
+logs/
+cache/
+
+# Editor / sistema
+.vscode/
+.DS_Store
+Thumbs.db

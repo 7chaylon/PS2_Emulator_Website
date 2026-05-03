@@ -1,0 +1,24 @@
+CREATE DATABASE IF NOT EXISTS sexo10k CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE sexo10k;
+
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY users_email_unique (email)
+);
+
+CREATE TABLE IF NOT EXISTS game_sessions (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  status ENUM('running', 'stopped') NOT NULL DEFAULT 'running',
+  stream_id VARCHAR(120) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  stopped_at TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (id),
+  KEY game_sessions_user_id_index (user_id),
+  CONSTRAINT game_sessions_user_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
