@@ -1,14 +1,21 @@
 import React from 'react';
+
 import { GameCoverCard } from './GameCoverCard';
 import { MessageBox } from '../ui/MessageBox';
 
-export function GameCatalog({ games, loadingGames, onSelectGame }) {
+export function GameCatalog({
+  games,
+  selectedGameId,
+  loadingGames,
+  onSelectGame,
+}) {
   return (
-    <section className="games-grid">
+    <div className="games-grid">
       {games.map((game) => (
         <GameCoverCard
           key={game.id}
           game={game}
+          selected={game.id === selectedGameId}
           onClick={() => onSelectGame(game)}
         />
       ))}
@@ -18,6 +25,6 @@ export function GameCatalog({ games, loadingGames, onSelectGame }) {
           Nenhum jogo cadastrado ainda.
         </MessageBox>
       )}
-    </section>
+    </div>
   );
 }

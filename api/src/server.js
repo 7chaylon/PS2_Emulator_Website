@@ -7,10 +7,12 @@ import { sessionStore } from './config/sessionStore.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { gameRoutes } from './routes/game.routes.js';
 import { gamesRoutes } from './routes/games.routes.js';
+import { adminGamesRoutes } from './routes/admin.games.routes.js';
 
 const app = express();
 
 const port = Number(process.env.PORT || 3001);
+
 
 app.use(cors({
   origin: true,
@@ -43,6 +45,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/games', gamesRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/admin/games', adminGamesRoutes);
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`API rodando em http://0.0.0.0:${port}`);

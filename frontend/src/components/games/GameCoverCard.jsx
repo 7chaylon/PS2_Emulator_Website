@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function GameCoverCard({ game, onClick }) {
+export function GameCoverCard({ game, selected, onClick }) {
   return (
     <button
       type="button"
-      className="game-card"
+      className={`game-card ${selected ? 'selected' : ''}`}
       onClick={onClick}
       title={game.title}
       aria-label={`Ver detalhes de ${game.title}`}
@@ -16,6 +16,10 @@ export function GameCoverCard({ game, onClick }) {
           <span>Sem capa</span>
         )}
       </div>
+
+      <span className="game-title-small">
+        {game.title}
+      </span>
     </button>
   );
 }

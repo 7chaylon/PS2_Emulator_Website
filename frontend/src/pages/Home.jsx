@@ -2,12 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { api } from '../lib/api';
 import { DashboardTopbar } from '../components/layout/DashboardTopbar';
-import { HomeHero } from '../components/games/HomeHero';
 import { GameCatalog } from '../components/games/GameCatalog';
 import { GameDetails } from '../components/games/GameDetails';
 import { MessageBox } from '../components/ui/MessageBox';
 
-export default function Home({ user, onLogout }) {
+export default function Home({ user, onLogout, onOpenAdmin }) {
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [gameSession, setGameSession] = useState(null);
@@ -33,7 +32,8 @@ export default function Home({ user, onLogout }) {
           api('/api/game/session'),
         ]);
 
-        setGames(gamesData.games || []);
+        const loadedGames = gamesData.games || [];
+        setGames(loadedGames);
 
         if (sessionData.session) {
           setGameSession({
@@ -43,6 +43,8 @@ export default function Home({ user, onLogout }) {
             game: sessionData.session.game || null,
             createdAt: sessionData.session.createdAt || sessionData.session.created_at,
           });
+        } else {
+          setSelectedGame(loadedGames[0] || null);
         }
       } catch (err) {
         console.error('Erro ao carregar dados iniciais:', err);
@@ -75,6 +77,7 @@ export default function Home({ user, onLogout }) {
         game: data.game,
       });
 
+      setSelectedGame(data.game);
       setMessage(`${game.title} iniciado.`);
     } catch (err) {
       if (err.session) {
@@ -86,11 +89,7 @@ export default function Home({ user, onLogout }) {
         });
       }
 
-      const details =
-        err.hostMessage ||
-        err.host ||
-        err.error ||
-        err.details;
+      const details = err.hostMessage || err.host || err.error || err.details;
 
       setMessage(
         details
@@ -122,11 +121,7 @@ export default function Home({ user, onLogout }) {
       setGameSession(null);
       setMessage('Sessão encerrada.');
     } catch (err) {
-      const details =
-        err.hostMessage ||
-        err.host ||
-        err.error ||
-        err.details;
+      const details = err.hostMessage || err.host || err.error || err.details;
 
       setMessage(
         details
@@ -148,12 +143,25 @@ export default function Home({ user, onLogout }) {
 
   return (
     <main className="dashboard-page">
-      <DashboardTopbar user={user} onLogout={logout} />
-
-      <HomeHero
-        gameSession={gameSession}
-        hasActiveSession={hasActiveSession}
+      <DashboardTopbar
+        user={user}
+        currentPage="catalog"
+        onLogout={logout}
+        onOpenAdmin={onOpenAdmin}
       />
+
+      <section className="catalog-header">
+        <div>
+          <h1>Catálogo</h1>
+          <p>Jogos de PS2 disponíveis para jogar via nuvem.</p>
+        </div>
+      </section>
+
+      <section className="catalog-toolbar">
+        <span className="catalog-count">
+          {games.length} jogos encontrados
+        </span>
+      </section>
 
       {(loadingGames || checkingSession) && (
         <MessageBox variant="info">
@@ -167,24 +175,29 @@ export default function Home({ user, onLogout }) {
         </MessageBox>
       )}
 
-      {currentGame ? (
+      <section className="games-shell">
+        <GameCatalog
+          games={games}
+          selectedGameId={currentGame?.id}
+          loadingGames={loadingGames}
+          onSelectGame={setSelectedGame}
+        />
+
         <GameDetails
           game={currentGame}
           gameSession={gameSession}
           loading={loading}
           checkingSession={checkingSession}
           hasActiveSession={hasActiveSession}
-          onBack={() => setSelectedGame(null)}
           onPlay={play}
           onStop={stop}
+          onClose={() => {
+            if (!hasActiveSession) {
+              setSelectedGame(null);
+            }
+          }}
         />
-      ) : (
-        <GameCatalog
-          games={games}
-          loadingGames={loadingGames}
-          onSelectGame={setSelectedGame}
-        />
-      )}
+      </section>
     </main>
   );
 }
