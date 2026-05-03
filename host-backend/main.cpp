@@ -2,29 +2,38 @@
 #include <winsock2.h>
 #include <windows.h>
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <unordered_map>
+
 #include "httplib.h"
 
 std::unordered_map<std::string, PROCESS_INFORMATION> g_sessions;
 
+// Pasta onde as sessões temporárias serão criadas.
+// Pode ficar dentro do projeto porque está no .gitignore.
 const std::string BASE_SESSION_DIR =
-    R"(C:\Users\chaylon\Downloads\sexo10k_auth_base\sexo10k_auth\sessions)";
+    R"(C:\Users\chaylon\Documents\Cleiton Rasta\sessions)";
 
+// Pasta original do PCSX2 portátil.
 const std::string PCSX2_ORIGINAL_DIR =
     R"(C:\Users\chaylon\Desktop\ps2 emulator\pcsx2-v2.7.306-windows-x64-Qt)";
 
+// Template com BIOS, configs, capas, inis etc.
 const std::string TEMPLATE_DIR =
-    R"(C:\Users\chaylon\Downloads\sexo10k_auth_base\sexo10k_auth\host-backend\pcsx2-template)";
+    R"(C:\Users\chaylon\Documents\Cleiton Rasta\host-backend\pcsx2-template)";
 
-const std::string GAME_ISO =
-    R"(C:\Users\chaylon\Desktop\ps2 emulator\jogo\FIFA Street 2 (USA) (En,Es)\FIFA Street 2 (USA) (En,Es).iso)";
 
 void addCorsHeaders(httplib::Response& res) {
     res.set_header("Access-Control-Allow-Origin", "*");
     res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.set_header("Access-Control-Allow-Headers", "Content-Type");
+}
+
+bool pathExists(const std::string& path) {
+    DWORD attributes = GetFileAttributesA(path.c_str());
+    return attributes != INVALID_FILE_ATTRIBUTES;
 }
 
 void createDir(const std::string& path) {
@@ -38,12 +47,38 @@ void copyFolder(const std::string& from, const std::string& to) {
     system(cmd.c_str());
 }
 
-bool startGameForSession(const std::string& sessionId) {
+void createPortableIni(const std::string& pcsx2Dir) {
+    std::string portablePath = pcsx2Dir + "\\portable.ini";
+
+    if (!pathExists(portablePath)) {
+        std::ofstream file(portablePath);
+        file.close();
+    }
+}
+
+bool startGameForSession(const std::string& sessionId, const std::string& gameIso) {
     if (g_sessions.find(sessionId) != g_sessions.end()) {
         std::cout << "Sessao ja existe: " << sessionId << "\n";
         return false;
     }
 
+    if (!pathExists(PCSX2_ORIGINAL_DIR)) {
+        std::cout << "PCSX2_ORIGINAL_DIR nao existe:\n"
+                  << PCSX2_ORIGINAL_DIR << "\n";
+        return false;
+    }
+
+    if (!pathExists(TEMPLATE_DIR)) {
+        std::cout << "TEMPLATE_DIR nao existe:\n"
+                  << TEMPLATE_DIR << "\n";
+        return false;
+    }
+
+    if (!pathExists(gameIso)) {
+        std::cout << "ISO do jogo nao existe:\n"
+                << gameIso << "\n";
+        return false;
+    }
     createDir(BASE_SESSION_DIR);
 
     std::string sessionDir = BASE_SESSION_DIR + "\\" + sessionId;
@@ -52,19 +87,29 @@ bool startGameForSession(const std::string& sessionId) {
     createDir(sessionDir);
     createDir(sessionPcsx2Dir);
 
-    // Copia o PCSX2 inteiro para a sessão
+    // Copia o PCSX2 inteiro para a sessão.
     copyFolder(PCSX2_ORIGINAL_DIR, sessionPcsx2Dir);
 
-    // Copia a configuração pronta para dentro da pasta do PCSX2 da sessão
+    // Copia a configuração pronta para dentro da pasta do PCSX2 da sessão.
     copyFolder(TEMPLATE_DIR, sessionPcsx2Dir);
+
+    // Garante que o PCSX2 rode em modo portátil e use as configs da sessão.
+    createPortableIni(sessionPcsx2Dir);
 
     std::string sessionExe = sessionPcsx2Dir + "\\pcsx2-qt.exe";
 
+    if (!pathExists(sessionExe)) {
+        std::cout << "pcsx2-qt.exe nao encontrado na sessao:\n"
+                  << sessionExe << "\n";
+        return false;
+    }
+
     std::string command =
         "\"" + sessionExe + "\" "
-        "\"" + GAME_ISO + "\" "
+        "\"" + gameIso + "\" "
         "-fullscreen "
-        "-portable";
+        "-portable "
+        "-batch";
 
     STARTUPINFOA si{};
     si.cb = sizeof(si);
@@ -96,6 +141,7 @@ bool startGameForSession(const std::string& sessionId) {
     std::cout << "Session: " << sessionId << "\n";
     std::cout << "PID: " << pi.dwProcessId << "\n";
     std::cout << "Dir: " << sessionPcsx2Dir << "\n";
+    std::cout << "ISO: " << gameIso << "\n";
     std::cout << "Command: " << command << "\n";
     std::cout << "============================\n";
 
@@ -152,9 +198,16 @@ int main() {
             return;
         }
 
-        std::string sessionId = req.get_param_value("sessionId");
+        if (!req.has_param("isoPath")) {
+            res.status = 400;
+            res.set_content("Missing isoPath", "text/plain");
+            return;
+        }
 
-        bool started = startGameForSession(sessionId);
+        std::string sessionId = req.get_param_value("sessionId");
+        std::string isoPath = req.get_param_value("isoPath");
+
+        bool started = startGameForSession(sessionId, isoPath);
 
         if (!started) {
             res.status = 409;

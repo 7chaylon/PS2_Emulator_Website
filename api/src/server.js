@@ -6,6 +6,7 @@ import session from 'express-session';
 import { sessionStore } from './config/sessionStore.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { gameRoutes } from './routes/game.routes.js';
+import { gamesRoutes } from './routes/games.routes.js';
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/games', gamesRoutes);
 app.use('/api/game', gameRoutes);
 
 app.listen(port, '0.0.0.0', () => {

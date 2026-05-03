@@ -1,60 +1,88 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import { api } from '../lib/api';
+import { DashboardTopbar } from '../components/layout/DashboardTopbar';
+import { HomeHero } from '../components/games/HomeHero';
+import { GameCatalog } from '../components/games/GameCatalog';
+import { GameDetails } from '../components/games/GameDetails';
+import { MessageBox } from '../components/ui/MessageBox';
 
 export default function Home({ user, onLogout }) {
+  const [games, setGames] = useState([]);
+  const [selectedGame, setSelectedGame] = useState(null);
   const [gameSession, setGameSession] = useState(null);
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loadingGames, setLoadingGames] = useState(true);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const hasActiveSession = useMemo(() => {
+    return (
+      gameSession?.status === 'starting' ||
+      gameSession?.status === 'running'
+    );
+  }, [gameSession]);
+
+  const currentGame = gameSession?.game || selectedGame;
 
   useEffect(() => {
-    async function loadActiveSession() {
+    async function loadInitialData() {
       try {
-        const data = await api('/api/game/session');
+        const [gamesData, sessionData] = await Promise.all([
+          api('/api/games'),
+          api('/api/game/session'),
+        ]);
 
-        if (data.session) {
+        setGames(gamesData.games || []);
+
+        if (sessionData.session) {
           setGameSession({
-            ok: true,
-            status: data.session.status,
-            gameSessionId: data.session.id,
-            streamId: data.session.stream_id,
-            createdAt: data.session.created_at,
+            status: sessionData.session.status,
+            gameSessionId: sessionData.session.id,
+            streamId: sessionData.session.streamId || sessionData.session.stream_id,
+            game: sessionData.session.game || null,
+            createdAt: sessionData.session.createdAt || sessionData.session.created_at,
           });
         }
       } catch (err) {
-        console.error('Erro ao carregar sessão ativa:', err);
+        console.error('Erro ao carregar dados iniciais:', err);
+        setMessage(err.message || 'Erro ao carregar dados iniciais.');
       } finally {
+        setLoadingGames(false);
         setCheckingSession(false);
       }
     }
 
-    loadActiveSession();
+    loadInitialData();
   }, []);
 
-  async function play() {
+  async function play(game) {
     setMessage('');
     setLoading(true);
 
     try {
       const data = await api('/api/game/play', {
         method: 'POST',
+        body: JSON.stringify({
+          gameId: game.id,
+        }),
       });
 
       setGameSession({
-        ok: true,
         status: data.status,
         gameSessionId: data.gameSessionId,
         streamId: data.streamId,
+        game: data.game,
       });
 
-      setMessage('Jogo iniciado.');
+      setMessage(`${game.title} iniciado.`);
     } catch (err) {
       if (err.session) {
         setGameSession({
-          ok: true,
           status: err.session.status,
           gameSessionId: err.session.id,
           streamId: err.session.streamId,
+          gameId: err.session.gameId,
         });
       }
 
@@ -118,62 +146,45 @@ export default function Home({ user, onLogout }) {
     onLogout();
   }
 
-  const hasActiveSession =
-    gameSession?.status === 'starting' || gameSession?.status === 'running';
-
   return (
     <main className="dashboard-page">
-      <nav className="topbar">
-        <div>
-          <strong>Sexo 10k</strong>
-          <span>{user.name}</span>
-        </div>
+      <DashboardTopbar user={user} onLogout={logout} />
 
-        <button className="ghost" onClick={logout}>
-          Sair
-        </button>
-      </nav>
+      <HomeHero
+        gameSession={gameSession}
+        hasActiveSession={hasActiveSession}
+      />
 
-      <section className="panel">
-        <h1>Sessão do emulador</h1>
+      {(loadingGames || checkingSession) && (
+        <MessageBox variant="info">
+          Carregando catálogo e verificando sessão ativa...
+        </MessageBox>
+      )}
 
-        <p className="muted">
-          Cada usuário possui uma sessão própria com um ID separado.
-        </p>
+      {message && (
+        <MessageBox variant="success">
+          {message}
+        </MessageBox>
+      )}
 
-        {checkingSession && (
-          <div className="success">
-            Verificando sessão ativa...
-          </div>
-        )}
-
-        <div className="actions">
-          <button
-            onClick={play}
-            disabled={loading || checkingSession || hasActiveSession}
-          >
-            {loading ? 'Carregando...' : 'Iniciar jogo'}
-          </button>
-
-          <button
-            className="danger"
-            onClick={stop}
-            disabled={loading || checkingSession || !hasActiveSession}
-          >
-            Parar jogo
-          </button>
-        </div>
-
-        {gameSession && (
-          <div className="session-box">
-            <span>Status: {gameSession.status}</span>
-            <span>Game session: {gameSession.gameSessionId}</span>
-            <span>Stream ID: {gameSession.streamId}</span>
-          </div>
-        )}
-
-        {message && <div className="success">{message}</div>}
-      </section>
+      {currentGame ? (
+        <GameDetails
+          game={currentGame}
+          gameSession={gameSession}
+          loading={loading}
+          checkingSession={checkingSession}
+          hasActiveSession={hasActiveSession}
+          onBack={() => setSelectedGame(null)}
+          onPlay={play}
+          onStop={stop}
+        />
+      ) : (
+        <GameCatalog
+          games={games}
+          loadingGames={loadingGames}
+          onSelectGame={setSelectedGame}
+        />
+      )}
     </main>
   );
 }

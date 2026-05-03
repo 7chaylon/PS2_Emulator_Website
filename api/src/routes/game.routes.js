@@ -9,8 +9,9 @@ export const gameRoutes = Router();
 const HOST_BACKEND_URL =
   process.env.HOST_BACKEND_URL || 'http://127.0.0.1:8080';
 
-async function callHost(path, sessionId) {
-  const url = `${HOST_BACKEND_URL}${path}?sessionId=${encodeURIComponent(sessionId)}`;
+async function callHost(path, params = {}) {
+  const searchParams = new URLSearchParams(params);
+  const url = `${HOST_BACKEND_URL}${path}?${searchParams.toString()}`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -28,13 +29,53 @@ async function callHost(path, sessionId) {
 
 gameRoutes.post('/play', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
+  const { gameId } = req.body;
+
+  if (!gameId) {
+    return res.status(400).json({
+      ok: false,
+      message: 'Informe o jogo que deseja iniciar.',
+    });
+  }
+
   const gameSessionId = crypto.randomUUID();
   const streamId = crypto.randomUUID();
 
   try {
+    const [games] = await pool.query(
+      `
+      SELECT
+        id,
+        title,
+        description,
+        serial,
+        iso_path,
+        cover_url
+      FROM games
+      WHERE id = ?
+        AND is_active = 1
+      LIMIT 1
+      `,
+      [gameId]
+    );
+
+    const game = games[0];
+
+    if (!game) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Jogo não encontrado.',
+      });
+    }
+
     const [activeSessions] = await pool.query(
       `
-      SELECT id, status, stream_id, created_at
+      SELECT
+        id,
+        status,
+        stream_id,
+        game_id,
+        created_at
       FROM game_sessions
       WHERE user_id = ?
         AND status IN ('starting', 'running')
@@ -52,6 +93,7 @@ gameRoutes.post('/play', requireAuth, async (req, res) => {
           id: activeSessions[0].id,
           status: activeSessions[0].status,
           streamId: activeSessions[0].stream_id,
+          gameId: activeSessions[0].game_id,
           createdAt: activeSessions[0].created_at,
         },
       });
@@ -62,15 +104,19 @@ gameRoutes.post('/play', requireAuth, async (req, res) => {
       INSERT INTO game_sessions (
         id,
         user_id,
+        game_id,
         status,
         stream_id
       )
-      VALUES (?, ?, 'starting', ?)
+      VALUES (?, ?, ?, 'starting', ?)
       `,
-      [gameSessionId, userId, streamId]
+      [gameSessionId, userId, game.id, streamId]
     );
 
-    const hostResult = await callHost('/play', gameSessionId);
+    const hostResult = await callHost('/play', {
+      sessionId: gameSessionId,
+      isoPath: game.iso_path,
+    });
 
     if (!hostResult.ok) {
       await pool.query(
@@ -96,6 +142,12 @@ gameRoutes.post('/play', requireAuth, async (req, res) => {
         message: 'O host do emulador não conseguiu iniciar o jogo.',
         gameSessionId,
         streamId,
+        game: {
+          id: game.id,
+          title: game.title,
+          serial: game.serial,
+          coverUrl: game.cover_url,
+        },
         hostStatus: hostResult.status,
         hostMessage: hostResult.text,
         hostUrl: hostResult.url,
@@ -119,6 +171,13 @@ gameRoutes.post('/play', requireAuth, async (req, res) => {
       status: 'running',
       gameSessionId,
       streamId,
+      game: {
+        id: game.id,
+        title: game.title,
+        description: game.description,
+        serial: game.serial,
+        coverUrl: game.cover_url,
+      },
       host: hostResult.text,
     });
   } catch (error) {
@@ -160,9 +219,12 @@ gameRoutes.post('/stop', requireAuth, async (req, res) => {
     if (gameSessionId) {
       const [rows] = await pool.query(
         `
-        SELECT id, status
+        SELECT
+          id,
+          status
         FROM game_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = ?
+          AND user_id = ?
         LIMIT 1
         `,
         [gameSessionId, userId]
@@ -174,7 +236,9 @@ gameRoutes.post('/stop', requireAuth, async (req, res) => {
     if (!session) {
       const [rows] = await pool.query(
         `
-        SELECT id, status
+        SELECT
+          id,
+          status
         FROM game_sessions
         WHERE user_id = ?
           AND status IN ('starting', 'running')
@@ -196,7 +260,9 @@ gameRoutes.post('/stop', requireAuth, async (req, res) => {
 
     gameSessionId = session.id;
 
-    const hostResult = await callHost('/stop', gameSessionId);
+    const hostResult = await callHost('/stop', {
+      sessionId: gameSessionId,
+    });
 
     await pool.query(
       `
@@ -232,27 +298,61 @@ gameRoutes.get('/session', requireAuth, async (req, res) => {
     const [rows] = await pool.query(
       `
       SELECT
-        id,
-        status,
-        stream_id,
-        host_message,
-        error_message,
-        created_at,
-        started_at,
-        stopped_at,
-        failed_at
-      FROM game_sessions
-      WHERE user_id = ?
-        AND status IN ('starting', 'running')
-      ORDER BY created_at DESC
+        gs.id,
+        gs.status,
+        gs.stream_id,
+        gs.host_message,
+        gs.error_message,
+        gs.created_at,
+        gs.started_at,
+        gs.stopped_at,
+        gs.failed_at,
+        g.id AS game_id,
+        g.title AS game_title,
+        g.description AS game_description,
+        g.serial AS game_serial,
+        g.cover_url AS game_cover_url
+      FROM game_sessions gs
+      LEFT JOIN games g ON g.id = gs.game_id
+      WHERE gs.user_id = ?
+        AND gs.status IN ('starting', 'running')
+      ORDER BY gs.created_at DESC
       LIMIT 1
       `,
       [req.session.user.id]
     );
 
+    const session = rows[0];
+
+    if (!session) {
+      return res.json({
+        ok: true,
+        session: null,
+      });
+    }
+
     return res.json({
       ok: true,
-      session: rows[0] || null,
+      session: {
+        id: session.id,
+        status: session.status,
+        streamId: session.stream_id,
+        hostMessage: session.host_message,
+        errorMessage: session.error_message,
+        createdAt: session.created_at,
+        startedAt: session.started_at,
+        stoppedAt: session.stopped_at,
+        failedAt: session.failed_at,
+        game: session.game_id
+          ? {
+              id: session.game_id,
+              title: session.game_title,
+              description: session.game_description,
+              serial: session.game_serial,
+              coverUrl: session.game_cover_url,
+            }
+          : null,
+      },
     });
   } catch (error) {
     console.error('Erro ao buscar sessão:', error);
