@@ -27,6 +27,23 @@ async function callHost(path, params = {}) {
   };
 }
 
+async function getHostSessionStatus(sessionId) {
+  const url = `${HOST_BACKEND_URL}/status?sessionId=${encodeURIComponent(sessionId)}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+  });
+
+  const data = await response.json().catch(() => null);
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data,
+    url,
+  };
+}
+
 gameRoutes.post('/play', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const { gameId } = req.body;
@@ -329,6 +346,33 @@ gameRoutes.get('/session', requireAuth, async (req, res) => {
         ok: true,
         session: null,
       });
+    }
+
+    try {
+      const hostStatus = await getHostSessionStatus(session.id);
+
+      if (hostStatus.ok && hostStatus.data?.running === false) {
+        await pool.query(
+          `
+          UPDATE game_sessions
+          SET
+            status = 'stopped',
+            host_message = 'PCSX2 encerrado fora da API.',
+            stopped_at = NOW()
+          WHERE id = ?
+            AND user_id = ?
+            AND status IN ('starting', 'running')
+          `,
+          [session.id, req.session.user.id]
+        );
+
+        return res.json({
+          ok: true,
+          session: null,
+        });
+      }
+    } catch (hostError) {
+      console.error('Erro ao consultar status do host:', hostError);
     }
 
     return res.json({

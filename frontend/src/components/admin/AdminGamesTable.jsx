@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAssetUrl } from '../../lib/api';
 
 export function AdminGamesTable({
   games,
@@ -36,7 +37,7 @@ export function AdminGamesTable({
           <article className="admin-game-row" key={game.id}>
             <div className="admin-game-cover">
               {game.coverUrl ? (
-                <img src={game.coverUrl} alt={game.title} />
+                <img src={getAssetUrl(game.coverUrl)} alt={game.title} />
               ) : (
                 <span>Sem capa</span>
               )}

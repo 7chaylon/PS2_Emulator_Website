@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
+import path from 'node:path';
 
 import { sessionStore } from './config/sessionStore.js';
 import { authRoutes } from './routes/auth.routes.js';
@@ -46,6 +47,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/games', gamesRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/admin/games', adminGamesRoutes);
+app.use('/covers', express.static(path.join(process.cwd(), 'public', 'covers')));
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`API rodando em http://0.0.0.0:${port}`);

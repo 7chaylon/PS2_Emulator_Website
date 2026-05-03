@@ -1,4 +1,6 @@
-import React from 'react';
+import React from "react";
+
+import { getAssetUrl } from "../../lib/api";
 
 export function GameDetails({
   game,
@@ -21,6 +23,8 @@ export function GameDetails({
     );
   }
 
+  const coverUrl = getAssetUrl(game.coverUrl);
+
   return (
     <aside className="game-info">
       <button
@@ -34,8 +38,8 @@ export function GameDetails({
 
       <div className="details-header">
         <div className="details-cover-mini">
-          {game.coverUrl ? (
-            <img src={game.coverUrl} alt={game.title} />
+          {coverUrl ? (
+            <img src={coverUrl} alt={game.title} />
           ) : (
             <span>Sem capa</span>
           )}
@@ -48,7 +52,7 @@ export function GameDetails({
       </div>
 
       <div className="game-meta">
-        <span>{game.serial || 'Serial não informado'}</span>
+        <span>{game.serial || "Serial não informado"}</span>
 
         {gameSession?.status && (
           <span>Status: {gameSession.status}</span>
@@ -60,7 +64,7 @@ export function GameDetails({
       </div>
 
       <p className="muted details-description">
-        {game.description || 'Sem descrição cadastrada.'}
+        {game.description || "Sem descrição cadastrada."}
       </p>
 
       <div className="details-info-grid">
@@ -71,7 +75,7 @@ export function GameDetails({
 
         <div>
           <small>Sessão</small>
-          <strong>{gameSession?.gameSessionId ? 'Ativa' : 'Pronta'}</strong>
+          <strong>{gameSession?.gameSessionId ? "Ativa" : "Pronta"}</strong>
         </div>
 
         <div>
@@ -85,13 +89,10 @@ export function GameDetails({
           onClick={() => onPlay(game)}
           disabled={loading || checkingSession || hasActiveSession}
         >
-          ▶ {loading ? 'Carregando...' : 'Iniciar jogo'}
+          ▶ {loading ? "Carregando..." : "Iniciar jogo"}
         </button>
 
-        <button
-          className="ghost"
-          disabled
-        >
+        <button className="ghost" disabled>
           Detalhes
         </button>
 

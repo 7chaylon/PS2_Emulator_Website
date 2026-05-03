@@ -1,29 +1,32 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 
-import { api } from '../lib/api';
-import { DashboardTopbar } from '../components/layout/DashboardTopbar';
-import { AdminGameForm } from '../components/admin/AdminGameForm';
-import { AdminGamesTable } from '../components/admin/AdminGamesTable';
-import { MessageBox } from '../components/ui/MessageBox';
+import { api, apiUpload } from "../lib/api";
+import { DashboardTopbar } from "../components/layout/DashboardTopbar";
+import { AdminGameForm } from "../components/admin/AdminGameForm";
+import { AdminGamesTable } from "../components/admin/AdminGamesTable";
+import { MessageBox } from "../components/ui/MessageBox";
 
 const emptyForm = {
-  title: '',
-  description: '',
-  serial: '',
-  isoPath: '',
-  coverUrl: '',
+  title: "",
+  description: "",
+  serial: "",
+  isoPath: "",
+  coverUrl: "",
   isActive: true,
 };
 
 export default function AdminGames({ user, onBack, onLogout }) {
   const [games, setGames] = useState([]);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [editingGameId, setEditingGameId] = useState(null);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [message, setMessage] = useState('');
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingGames, setLoadingGames] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const editingGame = useMemo(() => {
     return games.find((game) => game.id === editingGameId) || null;
@@ -39,9 +42,9 @@ export default function AdminGames({ user, onBack, onLogout }) {
         game.serial?.toLowerCase().includes(term);
 
       const matchesStatus =
-        statusFilter === 'all' ||
-        (statusFilter === 'active' && game.isActive) ||
-        (statusFilter === 'inactive' && !game.isActive);
+        statusFilter === "all" ||
+        (statusFilter === "active" && game.isActive) ||
+        (statusFilter === "inactive" && !game.isActive);
 
       return matchesSearch && matchesStatus;
     });
@@ -51,10 +54,10 @@ export default function AdminGames({ user, onBack, onLogout }) {
     setLoadingGames(true);
 
     try {
-      const data = await api('/api/admin/games');
+      const data = await api("/api/admin/games");
       setGames(data.games || []);
     } catch (err) {
-      setMessage(err.message || 'Erro ao carregar jogos.');
+      setMessage(err.message || "Erro ao carregar jogos.");
     } finally {
       setLoadingGames(false);
     }
@@ -74,21 +77,21 @@ export default function AdminGames({ user, onBack, onLogout }) {
   function startCreate() {
     setEditingGameId(null);
     setForm(emptyForm);
-    setMessage('');
+    setMessage("");
   }
 
   function startEdit(game) {
     setEditingGameId(game.id);
     setForm({
-      title: game.title || '',
-      description: game.description || '',
-      serial: game.serial || '',
-      isoPath: game.isoPath || '',
-      coverUrl: game.coverUrl || '',
+      title: game.title || "",
+      description: game.description || "",
+      serial: game.serial || "",
+      isoPath: game.isoPath || "",
+      coverUrl: game.coverUrl || "",
       isActive: Boolean(game.isActive),
     });
 
-    setMessage('');
+    setMessage("");
   }
 
   function cancelEdit() {
@@ -96,64 +99,124 @@ export default function AdminGames({ user, onBack, onLogout }) {
     setForm(emptyForm);
   }
 
+  async function uploadIso(file) {
+    if (!file) {
+      setMessage("Selecione uma ISO antes de enviar.");
+      return;
+    }
+
+    setMessage("");
+    setUploading(true);
+    setUploadProgress(0);
+    setUploadStatus("Preparando upload...");
+
+    try {
+      const formData = new FormData();
+
+      formData.append("iso", file);
+
+      if (form.title.trim()) {
+        formData.append("title", form.title.trim());
+      }
+
+      if (form.description.trim()) {
+        formData.append("description", form.description.trim());
+      }
+
+      const data = await apiUpload(
+        "/api/admin/games/upload",
+        formData,
+        (progress) => {
+          setUploadProgress(progress);
+
+          if (progress < 100) {
+            setUploadStatus(`Enviando ISO... ${progress}%`);
+          } else {
+            setUploadStatus(
+              "Upload concluído. Processando ISO, detectando serial e baixando capa...",
+            );
+          }
+        },
+      );
+
+      setUploadProgress(100);
+      setUploadStatus("Jogo cadastrado com sucesso.");
+      setMessage(data.message || "ISO enviada e jogo cadastrado com sucesso.");
+      setForm(emptyForm);
+      setEditingGameId(null);
+
+      await loadGames();
+    } catch (err) {
+      setUploadStatus("Falha no upload.");
+      setMessage(err.message || "Erro ao enviar ISO.");
+    } finally {
+      setUploading(false);
+
+      setTimeout(() => {
+        setUploadProgress(0);
+        setUploadStatus("");
+      }, 1800);
+    }
+  }
+
   async function saveGame(event) {
     event.preventDefault();
 
-    setMessage('');
+    setMessage("");
     setLoading(true);
 
     try {
       const path = editingGameId
         ? `/api/admin/games/${editingGameId}`
-        : '/api/admin/games';
+        : "/api/admin/games";
 
-      const method = editingGameId ? 'PUT' : 'POST';
+      const method = editingGameId ? "PUT" : "POST";
 
       const data = await api(path, {
         method,
         body: JSON.stringify(form),
       });
 
-      setMessage(data.message || 'Jogo salvo com sucesso.');
+      setMessage(data.message || "Jogo salvo com sucesso.");
       setForm(emptyForm);
       setEditingGameId(null);
       await loadGames();
     } catch (err) {
-      setMessage(err.message || 'Erro ao salvar jogo.');
+      setMessage(err.message || "Erro ao salvar jogo.");
     } finally {
       setLoading(false);
     }
   }
 
   async function toggleGameActive(game, isActive) {
-    setMessage('');
+    setMessage("");
     setLoading(true);
 
     try {
       const data = await api(`/api/admin/games/${game.id}`, {
-        method: 'PUT',
+        method: "PUT",
         body: JSON.stringify({
           title: game.title,
-          description: game.description || '',
+          description: game.description || "",
           serial: game.serial,
           isoPath: game.isoPath,
-          coverUrl: game.coverUrl || '',
+          coverUrl: game.coverUrl || "",
           isActive,
         }),
       });
 
-      setMessage(data.message || 'Jogo atualizado.');
+      setMessage(data.message || "Jogo atualizado.");
       await loadGames();
     } catch (err) {
-      setMessage(err.message || 'Erro ao atualizar jogo.');
+      setMessage(err.message || "Erro ao atualizar jogo.");
     } finally {
       setLoading(false);
     }
   }
 
   async function logout() {
-    await api('/api/auth/logout', {
-      method: 'POST',
+    await api("/api/auth/logout", {
+      method: "POST",
     });
 
     onLogout();
@@ -173,9 +236,7 @@ export default function AdminGames({ user, onBack, onLogout }) {
           <header className="admin-header">
             <div>
               <h1>Admin</h1>
-              <p className="muted">
-                Gerencie os jogos do catálogo.
-              </p>
+              <p className="muted">Gerencie os jogos do catálogo.</p>
             </div>
 
             <button className="admin-add-button" onClick={startCreate}>
@@ -183,11 +244,7 @@ export default function AdminGames({ user, onBack, onLogout }) {
             </button>
           </header>
 
-          {message && (
-            <MessageBox variant="info">
-              {message}
-            </MessageBox>
-          )}
+          {message && <MessageBox variant="info">{message}</MessageBox>}
 
           <div className="admin-filters">
             <input
@@ -229,10 +286,14 @@ export default function AdminGames({ user, onBack, onLogout }) {
           form={form}
           selectedGame={editingGame}
           loading={loading}
+          uploading={uploading}
+          uploadProgress={uploadProgress}
+          uploadStatus={uploadStatus}
           editingGameId={editingGameId}
           onChange={updateForm}
           onSubmit={saveGame}
           onCancel={cancelEdit}
+          onUploadIso={uploadIso}
         />
       </section>
     </main>

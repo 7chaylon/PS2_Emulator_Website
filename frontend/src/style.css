@@ -45,8 +45,16 @@ body {
     "Segoe UI",
     sans-serif;
   background:
-    radial-gradient(circle at 18% 10%, rgba(66, 230, 129, 0.08), transparent 28%),
-    radial-gradient(circle at 90% 30%, rgba(72, 95, 255, 0.08), transparent 24%),
+    radial-gradient(
+      circle at 18% 10%,
+      rgba(66, 230, 129, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 30%,
+      rgba(72, 95, 255, 0.08),
+      transparent 24%
+    ),
     linear-gradient(180deg, #090b10 0%, #0b1017 42%, #080a0f 100%);
   color: var(--text);
 }
@@ -439,7 +447,11 @@ button:hover:not(:disabled) {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.03)),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.03)
+    ),
     rgba(13, 17, 24, 0.84);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
 }
@@ -500,7 +512,11 @@ button:hover:not(:disabled) {
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius-md);
   background:
-    radial-gradient(circle at 50% 20%, rgba(66, 230, 129, 0.12), transparent 42%),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(66, 230, 129, 0.12),
+      transparent 42%
+    ),
     rgba(0, 0, 0, 0.18);
   text-align: center;
 }
@@ -589,7 +605,10 @@ button:hover:not(:disabled) {
 
 .admin-game-row {
   display: grid;
-  grid-template-columns: 52px minmax(180px, 1.1fr) 130px minmax(260px, 1.2fr) 100px 170px;
+  grid-template-columns: 52px minmax(180px, 1.1fr) 130px minmax(
+      260px,
+      1.2fr
+    ) 100px 170px;
   gap: 16px;
   align-items: center;
   min-height: 76px;
@@ -675,7 +694,11 @@ button:hover:not(:disabled) {
   padding: 24px;
   border-left: 1px solid var(--line);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.018)
+    ),
     rgba(9, 12, 18, 0.56);
 }
 
@@ -969,7 +992,10 @@ button:hover:not(:disabled) {
 
 .admin-table-head {
   display: grid;
-  grid-template-columns: minmax(220px, 1.1fr) 130px minmax(260px, 1.2fr) 100px 170px;
+  grid-template-columns: minmax(220px, 1.1fr) 130px minmax(
+      260px,
+      1.2fr
+    ) 100px 170px;
   gap: 16px;
   padding: 0 0 10px 68px;
   color: var(--muted);
@@ -978,7 +1004,10 @@ button:hover:not(:disabled) {
 }
 
 .admin-game-row {
-  grid-template-columns: 52px minmax(160px, 1.1fr) 130px minmax(260px, 1.2fr) 100px 170px;
+  grid-template-columns: 52px minmax(160px, 1.1fr) 130px minmax(
+      260px,
+      1.2fr
+    ) 100px 170px;
 }
 
 .admin-game-title h3 {
@@ -1027,4 +1056,122 @@ button:hover:not(:disabled) {
   .details-info-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.iso-upload-box {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid var(--green-line);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(66, 230, 129, 0.12),
+      transparent 46%
+    ),
+    rgba(66, 230, 129, 0.06);
+}
+
+.upload-label {
+  width: fit-content;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.iso-upload-box p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.iso-file-field {
+  display: block;
+  cursor: pointer;
+}
+
+.iso-file-field input {
+  display: none;
+}
+
+.iso-file-field span {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  color: var(--muted-strong);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.2);
+  word-break: break-all;
+}
+
+.upload-button {
+  width: 100%;
+}
+.upload-progress {
+  position: relative;
+  height: 34px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.upload-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(66, 230, 129, 0.72), var(--green));
+  transition: width 0.2s ease;
+}
+
+.upload-progress span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #06100b;
+  font-weight: 900;
+  font-size: 13px;
+}
+.upload-progress-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.upload-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.upload-progress {
+  position: relative;
+  height: 34px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.upload-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(66, 230, 129, 0.72), var(--green));
+  transition: width 0.2s ease;
+}
+
+.upload-progress span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #06100b;
+  font-weight: 900;
+  font-size: 13px;
 }

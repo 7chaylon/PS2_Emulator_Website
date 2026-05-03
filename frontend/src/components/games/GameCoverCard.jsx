@@ -1,6 +1,10 @@
 import React from 'react';
 
+import { getAssetUrl } from '../../lib/api';
+
 export function GameCoverCard({ game, selected, onClick }) {
+  const coverUrl = getAssetUrl(game.coverUrl);
+
   return (
     <button
       type="button"
@@ -10,8 +14,8 @@ export function GameCoverCard({ game, selected, onClick }) {
       aria-label={`Ver detalhes de ${game.title}`}
     >
       <div className="game-cover">
-        {game.coverUrl ? (
-          <img src={game.coverUrl} alt={game.title} />
+        {coverUrl ? (
+          <img src={coverUrl} alt={game.title} />
         ) : (
           <span>Sem capa</span>
         )}
