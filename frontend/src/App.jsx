@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import AdminGames from './pages/AdminGames';
+import ControlsSetup from './pages/ControlsSetup';
 
 import './style.css';
 
@@ -40,6 +41,14 @@ export default function App() {
     return <div className="loading-screen">Carregando...</div>;
   }
 
+  if (user && page === 'controls') {
+    return (
+      <ControlsSetup
+        onBack={() => setPage('home')}
+      />
+    );
+  }
+
   if (user && page === 'admin') {
     return (
       <AdminGames
@@ -56,6 +65,7 @@ export default function App() {
         user={user}
         onLogout={handleLogout}
         onOpenAdmin={() => setPage('admin')}
+        onOpenControls={() => setPage('controls')}
       />
     );
   }

@@ -1320,3 +1320,434 @@ body.game-mode-active .dashboard-page {
 .game-mode-player {
   overflow: hidden;
 }
+
+.controls-page {
+  min-height: 100vh;
+  padding: 38px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(66, 230, 129, 0.08), transparent 28%),
+    radial-gradient(circle at 80% 20%, rgba(50, 130, 255, 0.08), transparent 30%),
+    #080a0f;
+  color: var(--text);
+}
+
+.controls-shell {
+  width: min(1540px, 100%);
+  margin: 0 auto;
+  padding: 32px 34px 24px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(9, 12, 18, 0.62);
+}
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.controls-header h1 {
+  margin: 0;
+  font-size: clamp(38px, 4vw, 56px);
+  letter-spacing: -0.06em;
+}
+
+.controls-header p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.controls-status {
+  padding: 10px 13px;
+  border-radius: 999px;
+  color: #ffd86b;
+  border: 1px solid rgba(255, 216, 107, 0.32);
+  background: rgba(255, 216, 107, 0.09);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.controls-status.complete {
+  color: var(--green);
+  border-color: var(--green-line);
+  background: var(--green-soft);
+}
+
+.controls-message {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--muted-strong);
+}
+
+.controls-layout {
+  display: grid;
+  grid-template-columns: 350px minmax(460px, 1fr) 350px;
+  gap: 22px;
+  align-items: center;
+}
+
+.controls-column {
+  display: grid;
+  gap: 14px;
+}
+
+.controls-panel {
+  min-height: 150px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at top left, rgba(66, 230, 129, 0.055), transparent 50%),
+    rgba(255, 255, 255, 0.035);
+}
+
+.controls-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 18px;
+  color: var(--muted-strong);
+  font-size: 13px;
+}
+
+.controls-panel h2 span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 18px rgba(66, 230, 129, 0.5);
+}
+
+.controls-panel-items {
+  display: grid;
+  gap: 10px;
+}
+
+.control-bind-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 0;
+  color: var(--muted-strong);
+  background: transparent;
+}
+
+.control-bind-row:hover {
+  filter: none;
+}
+
+.control-bind-row strong,
+.center-control-box strong {
+  min-width: 48px;
+  display: inline-grid;
+  place-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+}
+
+.control-bind-row.listening strong,
+.center-control-box.listening strong {
+  color: #54a9ff;
+  border-color: rgba(84, 169, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(84, 169, 255, 0.12);
+}
+
+.controller-stage {
+  display: grid;
+  align-content: center;
+  gap: 20px;
+}
+
+.center-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.center-control-box {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.center-control-box span {
+  font-size: 12px;
+}
+
+.center-control-box strong {
+  width: 100%;
+}
+
+.ps2-controller {
+  height: 380px;
+  display: grid;
+  place-items: center;
+}
+
+.controller-body {
+  position: relative;
+  width: min(640px, 100%);
+  height: 270px;
+  border-radius: 42% 42% 46% 46%;
+  background:
+    radial-gradient(circle at 35% 78%, rgba(255,255,255,0.12), transparent 12%),
+    radial-gradient(circle at 65% 78%, rgba(255,255,255,0.12), transparent 12%),
+    linear-gradient(180deg, #252932, #07090d 80%);
+  border: 1px solid rgba(255,255,255,0.09);
+  box-shadow:
+    inset 0 20px 30px rgba(255,255,255,0.05),
+    inset 0 -40px 60px rgba(0,0,0,0.65),
+    0 40px 100px rgba(0,0,0,0.65);
+}
+
+.controller-body::before,
+.controller-body::after {
+  content: "";
+  position: absolute;
+  width: 190px;
+  height: 230px;
+  bottom: -75px;
+  background: linear-gradient(180deg, #191d24, #07090d);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset 0 -30px 45px rgba(0,0,0,0.65);
+}
+
+.controller-body::before {
+  left: 45px;
+  border-radius: 40% 35% 55% 45%;
+  transform: rotate(18deg);
+}
+
+.controller-body::after {
+  right: 45px;
+  border-radius: 35% 40% 45% 55%;
+  transform: rotate(-18deg);
+}
+
+.sony-text {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.5);
+  font-size: 34px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.controller-left,
+.controller-right,
+.controller-center {
+  position: absolute;
+  z-index: 3;
+}
+
+.controller-left {
+  left: 88px;
+  top: 80px;
+}
+
+.controller-right {
+  right: 95px;
+  top: 70px;
+}
+
+.controller-center {
+  left: 50%;
+  top: 120px;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: 36px 40px 36px;
+  gap: 16px;
+  align-items: center;
+}
+
+.dpad {
+  width: 124px;
+  height: 124px;
+  position: relative;
+}
+
+.dpad span {
+  position: absolute;
+  background: #0b0d11;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: inset 0 8px 12px rgba(255,255,255,0.05);
+}
+
+.dpad span:nth-child(1),
+.dpad span:nth-child(2) {
+  width: 42px;
+  height: 100%;
+  left: 41px;
+  border-radius: 12px;
+}
+
+.dpad span:nth-child(2) {
+  transform: rotate(90deg);
+}
+
+.dpad span:nth-child(3),
+.dpad span:nth-child(4) {
+  display: none;
+}
+
+.face-buttons {
+  width: 138px;
+  height: 138px;
+  position: relative;
+}
+
+.face-buttons span {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: white;
+  background: #0b0d11;
+  border: 2px solid rgba(255,255,255,0.1);
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.triangle {
+  top: 0;
+  left: 45px;
+  color: #4cff9b !important;
+}
+
+.square {
+  top: 45px;
+  left: 0;
+  color: #ff6bea !important;
+}
+
+.circle {
+  top: 45px;
+  right: 0;
+  color: #ff5c6f !important;
+}
+
+.cross {
+  bottom: 0;
+  left: 45px;
+  color: #61a8ff !important;
+}
+
+.analog-stick {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), transparent 28%),
+    radial-gradient(circle, #30343c, #050609 70%);
+  border: 8px solid #050609;
+  box-shadow: inset 0 8px 18px rgba(255,255,255,0.08), 0 10px 20px rgba(0,0,0,0.55);
+}
+
+.left-stick {
+  left: 128px;
+  top: 170px;
+}
+
+.right-stick {
+  right: 118px;
+  top: 180px;
+}
+
+.small-button {
+  width: 34px;
+  height: 18px;
+  border-radius: 6px;
+  background: #07090d;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.analog-light {
+  width: 34px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 16px rgba(66, 230, 129, 0.6);
+}
+
+.controls-tip {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 12px 16px;
+  color: #83bfff;
+  border-radius: 12px;
+  border: 1px solid rgba(84, 169, 255, 0.24);
+  background: rgba(84, 169, 255, 0.08);
+  font-size: 14px;
+}
+
+.controls-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.controls-actions > div {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 1200px) {
+  .controls-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-column {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .ps2-controller {
+    height: 330px;
+  }
+}
+
+@media (max-width: 760px) {
+  .controls-page {
+    padding: 18px;
+  }
+
+  .controls-shell {
+    padding: 22px;
+  }
+
+  .controls-header,
+  .controls-actions {
+    display: grid;
+  }
+
+  .controls-actions > div {
+    display: grid;
+  }
+
+  .center-controls {
+    grid-template-columns: 1fr;
+  }
+}

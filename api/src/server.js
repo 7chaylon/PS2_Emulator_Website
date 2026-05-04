@@ -9,6 +9,7 @@ import { authRoutes } from './routes/auth.routes.js';
 import { gameRoutes } from './routes/game.routes.js';
 import { gamesRoutes } from './routes/games.routes.js';
 import { adminGamesRoutes } from './routes/admin.games.routes.js';
+import { controlsRoutes } from './routes/controls.routes.js';
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use('/api/games', gamesRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/admin/games', adminGamesRoutes);
 app.use('/covers', express.static(path.join(process.cwd(), 'public', 'covers')));
+app.use('/api/controls', controlsRoutes);
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`API rodando em http://0.0.0.0:${port}`);

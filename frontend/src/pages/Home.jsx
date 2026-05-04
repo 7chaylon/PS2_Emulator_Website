@@ -6,7 +6,7 @@ import { GameCatalog } from "../components/games/GameCatalog";
 import { GameDetails } from "../components/games/GameDetails";
 import { MessageBox } from "../components/ui/MessageBox";
 
-export default function Home({ user, onLogout, onOpenAdmin }) {
+export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [gameSession, setGameSession] = useState(null);
@@ -73,6 +73,19 @@ export default function Home({ user, onLogout, onOpenAdmin }) {
   }
 
   async function startGameMode(game) {
+    try {
+      const data = await api("/api/controls/me/status");
+
+      if (!data.isComplete) {
+        setMessage("Configure seus controles antes de jogar.");
+        onOpenControls();
+        return;
+      }
+    } catch (err) {
+      setMessage(err.message || "Erro ao verificar controles.");
+      return;
+    }
+
     setGameModeGame(game);
     setGameModeOpen(true);
 
