@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+
 import { GameModeOverlay } from "../components/games/GameModeOverlay";
 import { api } from "../lib/api";
 import { DashboardTopbar } from "../components/layout/DashboardTopbar";
@@ -16,11 +17,15 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
   const [loading, setLoading] = useState(false);
   const [gameModeOpen, setGameModeOpen] = useState(false);
   const [gameModeGame, setGameModeGame] = useState(null);
+  const [controlBindings, setControlBindings] = useState({});
+
   const hasActiveSession = useMemo(() => {
     return (
-      gameSession?.status === "starting" || gameSession?.status === "running"
+      gameSession?.status === "starting" ||
+      gameSession?.status === "running"
     );
   }, [gameSession]);
+
   const currentGame = gameSession?.game || selectedGame;
 
   useEffect(() => {
@@ -58,6 +63,7 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
 
     loadInitialData();
   }, []);
+
   async function enterFullscreen() {
     const element = document.documentElement;
 
@@ -74,13 +80,16 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
 
   async function startGameMode(game) {
     try {
-      const data = await api("/api/controls/me/status");
+      const statusData = await api("/api/controls/me/status");
 
-      if (!data.isComplete) {
+      if (!statusData.isComplete) {
         setMessage("Configure seus controles antes de jogar.");
         onOpenControls();
         return;
       }
+
+      const controlsData = await api("/api/controls/me");
+      setControlBindings(controlsData.profile?.bindings || {});
     } catch (err) {
       setMessage(err.message || "Erro ao verificar controles.");
       return;
@@ -106,6 +115,7 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
     } finally {
       setGameModeOpen(false);
       setGameModeGame(null);
+      setControlBindings({});
 
       try {
         await exitFullscreen();
@@ -114,6 +124,7 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
       }
     }
   }
+
   async function play(game) {
     setMessage("");
     setLoading(true);
@@ -147,7 +158,11 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
 
       const details = err.hostMessage || err.host || err.error || err.details;
 
-      setMessage(details ? `${err.message} Detalhes: ${details}` : err.message);
+      setMessage(
+        details
+          ? `${err.message} Detalhes: ${details}`
+          : err.message
+      );
     } finally {
       setLoading(false);
     }
@@ -175,7 +190,11 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
     } catch (err) {
       const details = err.hostMessage || err.host || err.error || err.details;
 
-      setMessage(details ? `${err.message} Detalhes: ${details}` : err.message);
+      setMessage(
+        details
+          ? `${err.message} Detalhes: ${details}`
+          : err.message
+      );
     } finally {
       setLoading(false);
     }
@@ -207,7 +226,9 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
       </section>
 
       <section className="catalog-toolbar">
-        <span className="catalog-count">{games.length} jogos encontrados</span>
+        <span className="catalog-count">
+          {games.length} jogos encontrados
+        </span>
       </section>
 
       {(loadingGames || checkingSession) && (
@@ -216,7 +237,11 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
         </MessageBox>
       )}
 
-      {message && <MessageBox variant="success">{message}</MessageBox>}
+      {message && (
+        <MessageBox variant="success">
+          {message}
+        </MessageBox>
+      )}
 
       <section className="games-shell">
         <GameCatalog
@@ -239,11 +264,13 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
             }
           }}
         />
+
         <GameModeOverlay
           open={gameModeOpen}
           game={gameModeGame || currentGame}
           gameSession={gameSession}
           loading={loading}
+          controlBindings={controlBindings}
           onExit={exitGameMode}
         />
       </section>
