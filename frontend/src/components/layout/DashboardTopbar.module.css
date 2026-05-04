@@ -1,0 +1,82 @@
+.topbar {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-height);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0 40px;
+  background: rgba(8, 10, 15, 0.78);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+}
+
+.brandLogo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandLogo strong {
+  font-size: 22px;
+  letter-spacing: -0.05em;
+}
+
+.brandLogo span {
+  color: var(--green);
+}
+
+.nav {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.link {
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  padding: 8px 10px;
+  font-weight: 700;
+}
+
+.link:hover {
+  color: var(--text);
+  filter: none;
+}
+
+.userMenu {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--green);
+  border: 1px solid var(--green-line);
+  border-radius: 999px;
+  background: var(--green-soft);
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: 0 16px;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .brandLogo strong {
+    font-size: 20px;
+  }
+}

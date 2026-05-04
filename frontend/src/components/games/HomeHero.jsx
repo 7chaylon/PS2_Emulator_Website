@@ -1,20 +1,20 @@
-import React from 'react';
+import React from "react";
+
+import styles from "./HomeHero.module.css";
 
 export function HomeHero({ gameSession, hasActiveSession }) {
   return (
-    <section className="hero-panel">
+    <section className={styles.hero}>
       <div>
-        <span className="brand-pill">Catálogo PS2</span>
+        <span className={styles.brandPill}>Catálogo PS2</span>
         <h1>Escolha um jogo</h1>
-        <p className="muted">
-          Selecione uma capa do catálogo para abrir os detalhes do jogo.
-        </p>
+        <p>Selecione uma capa do catálogo para abrir os detalhes do jogo.</p>
       </div>
 
       {hasActiveSession && (
-        <div className="active-session-card">
+        <div className={styles.activeSession}>
           <span>Sessão ativa</span>
-          <strong>{gameSession?.game?.title || 'Jogo em execução'}</strong>
+          <strong>{gameSession?.game?.title || "Jogo em execução"}</strong>
           <small>Status: {gameSession.status}</small>
         </div>
       )}

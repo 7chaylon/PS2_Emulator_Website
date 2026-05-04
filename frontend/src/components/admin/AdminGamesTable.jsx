@@ -1,5 +1,7 @@
-import React from 'react';
-import { getAssetUrl } from '../../lib/api';
+import React from "react";
+
+import { getAssetUrl } from "../../lib/api";
+import styles from "./AdminGamesTable.module.css";
 
 export function AdminGamesTable({
   games,
@@ -10,21 +12,19 @@ export function AdminGamesTable({
   onToggleActive,
 }) {
   return (
-    <section className="admin-panel admin-list">
-      <div className="admin-list-title">
+    <section className={styles.panel}>
+      <div className={styles.title}>
         <h2>Jogos cadastrados</h2>
         <span>{totalGames} jogos</span>
       </div>
 
-      {loadingGames && (
-        <p className="muted">Carregando jogos...</p>
-      )}
+      {loadingGames && <p className={styles.muted}>Carregando jogos...</p>}
 
       {!loadingGames && games.length === 0 && (
-        <p className="muted">Nenhum jogo encontrado.</p>
+        <p className={styles.muted}>Nenhum jogo encontrado.</p>
       )}
 
-      <div className="admin-table-head">
+      <div className={styles.tableHead}>
         <span>Jogo</span>
         <span>Serial</span>
         <span>Caminho da ISO</span>
@@ -32,10 +32,10 @@ export function AdminGamesTable({
         <span>Ações</span>
       </div>
 
-      <div className="admin-games-list">
+      <div className={styles.list}>
         {games.map((game) => (
-          <article className="admin-game-row" key={game.id}>
-            <div className="admin-game-cover">
+          <article className={styles.row} key={game.id}>
+            <div className={styles.cover}>
               {game.coverUrl ? (
                 <img src={getAssetUrl(game.coverUrl)} alt={game.title} />
               ) : (
@@ -43,26 +43,22 @@ export function AdminGamesTable({
               )}
             </div>
 
-            <div className="admin-game-title">
+            <div className={styles.gameTitle}>
               <h3>{game.title}</h3>
             </div>
 
-            <p className="admin-game-serial">
-              {game.serial}
-            </p>
+            <p className={styles.serial}>{game.serial}</p>
 
-            <small className="admin-game-path">
-              {game.isoPath}
-            </small>
+            <small className={styles.path}>{game.isoPath}</small>
 
-            <span className={game.isActive ? 'status-active' : 'status-inactive'}>
-              {game.isActive ? 'Ativo' : 'Inativo'}
+            <span className={game.isActive ? styles.active : styles.inactive}>
+              {game.isActive ? "Ativo" : "Inativo"}
             </span>
 
-            <div className="admin-game-actions">
+            <div className={styles.actions}>
               <button
                 type="button"
-                className="ghost"
+                className={styles.secondaryButton}
                 onClick={() => onEdit(game)}
                 disabled={loading}
               >
@@ -71,11 +67,11 @@ export function AdminGamesTable({
 
               <button
                 type="button"
-                className={game.isActive ? 'ghost' : 'ghost'}
+                className={styles.secondaryButton}
                 onClick={() => onToggleActive(game, !game.isActive)}
                 disabled={loading}
               >
-                {game.isActive ? 'Desativar' : 'Ativar'}
+                {game.isActive ? "Desativar" : "Ativar"}
               </button>
             </div>
           </article>

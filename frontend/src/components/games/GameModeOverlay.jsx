@@ -1,8 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { getAssetUrl } from "../../lib/api";
 import { useHoldToExit } from "../../hooks/useHoldToExit";
 import { useGameInputCapture } from "../../hooks/useGameInputCapture";
+import { WebRTCPlayer } from "./WebRTCPlayer";
+import {
+  PS2_INPUT_STATE,
+  sendGameInputHttp,
+} from "../../services/gameInputService";
+import styles from "./GameModeOverlay.module.css";
 
 export function GameModeOverlay({
   open,
@@ -19,19 +25,39 @@ export function GameModeOverlay({
     onExit,
   });
 
+  const sendInput = useCallback(
+    async ({ inputCode, ps2Button, state }) => {
+      if (!gameSession?.gameSessionId) return;
+
+      try {
+        await sendGameInputHttp({
+          gameSessionId: gameSession.gameSessionId,
+          inputCode,
+          ps2Button,
+          state,
+        });
+      } catch (error) {
+        console.error("Erro ao enviar input:", error);
+      }
+    },
+    [gameSession?.gameSessionId]
+  );
+
   useGameInputCapture({
     enabled: open && Boolean(gameSession?.gameSessionId),
     bindings: controlBindings,
     onInputDown: ({ inputCode, ps2Button }) => {
-      console.log("PS2 INPUT DOWN:", {
+      sendInput({
         inputCode,
         ps2Button,
+        state: PS2_INPUT_STATE.DOWN,
       });
     },
     onInputUp: ({ inputCode, ps2Button }) => {
-      console.log("PS2 INPUT UP:", {
+      sendInput({
         inputCode,
         ps2Button,
+        state: PS2_INPUT_STATE.UP,
       });
     },
   });
@@ -53,34 +79,36 @@ export function GameModeOverlay({
   const coverUrl = getAssetUrl(game?.coverUrl);
 
   return (
-    <section className="game-mode-overlay">
-      <div className="game-mode-player">
-        <div className="game-mode-placeholder">
-          {coverUrl && (
-            <img src={coverUrl} alt={game?.title || "Jogo"} />
-          )}
+    <section className={styles.overlay}>
+      <div className={styles.player}>
+        <div className={styles.placeholder}>
+          <WebRTCPlayer gameSession={gameSession} />
 
-          <div>
-            <span>Modo jogo</span>
-            <h1>{game?.title || "Iniciando jogo"}</h1>
+          <div className={styles.statusPanel}>
+            {coverUrl && <img src={coverUrl} alt={game?.title || "Jogo"} />}
 
-            <p>
-              {loading
-                ? "Iniciando sessão do emulador..."
-                : gameSession?.gameSessionId
-                  ? "Sessão iniciada. O streaming WebRTC será exibido aqui."
-                  : "Preparando sessão..."}
-            </p>
+            <div>
+              <span>Modo jogo</span>
+              <h1>{game?.title || "Iniciando jogo"}</h1>
 
-            <small>
-              Segure <strong>F8</strong> por 5 segundos para encerrar.
-            </small>
+              <p>
+                {loading
+                  ? "Iniciando sessão do emulador..."
+                  : gameSession?.gameSessionId
+                    ? "Sessão iniciada. Conecte a transmissão quando o host estiver pronto."
+                    : "Preparando sessão..."}
+              </p>
+
+              <small>
+                Segure <strong>F8</strong> por 5 segundos para encerrar.
+              </small>
+            </div>
           </div>
         </div>
 
         <button
           type="button"
-          className="game-mode-dev-exit"
+          className={styles.devExit}
           onClick={onExit}
           title="Encerrar sessão"
         >
@@ -88,7 +116,7 @@ export function GameModeOverlay({
         </button>
 
         {exitProgress > 0 && (
-          <div className="exit-hold-indicator">
+          <div className={styles.exitIndicator}>
             <span>Encerrando sessão...</span>
 
             <div>

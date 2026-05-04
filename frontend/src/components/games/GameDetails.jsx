@@ -1,6 +1,7 @@
 import React from "react";
 
 import { getAssetUrl } from "../../lib/api";
+import styles from "./GameDetails.module.css";
 
 export function GameDetails({
   game,
@@ -13,11 +14,9 @@ export function GameDetails({
 }) {
   if (!game) {
     return (
-      <aside className="game-info empty-details">
+      <aside className={`${styles.info} ${styles.empty}`}>
         <strong>Selecione um jogo</strong>
-        <p className="muted">
-          Clique em uma capa para visualizar detalhes e iniciar uma sessão.
-        </p>
+        <p>Clique em uma capa para visualizar detalhes e iniciar uma sessão.</p>
       </aside>
     );
   }
@@ -25,9 +24,9 @@ export function GameDetails({
   const coverUrl = getAssetUrl(game.coverUrl);
 
   return (
-    <aside className="game-info">
+    <aside className={styles.info}>
       <button
-        className="ghost back-button"
+        className={styles.backButton}
         onClick={onClose}
         disabled={loading || hasActiveSession}
         title="Fechar detalhes"
@@ -35,8 +34,8 @@ export function GameDetails({
         ×
       </button>
 
-      <div className="details-header">
-        <div className="details-cover-mini">
+      <div className={styles.header}>
+        <div className={styles.coverMini}>
           {coverUrl ? (
             <img src={coverUrl} alt={game.title} />
           ) : (
@@ -50,23 +49,19 @@ export function GameDetails({
         </div>
       </div>
 
-      <div className="game-meta">
+      <div className={styles.meta}>
         <span>{game.serial || "Serial não informado"}</span>
 
-        {gameSession?.status && (
-          <span>Status: {gameSession.status}</span>
-        )}
+        {gameSession?.status && <span>Status: {gameSession.status}</span>}
 
-        {gameSession?.streamId && (
-          <span>Stream ID: {gameSession.streamId}</span>
-        )}
+        {gameSession?.streamId && <span>Stream ID: {gameSession.streamId}</span>}
       </div>
 
-      <p className="muted details-description">
+      <p className={styles.description}>
         {game.description || "Sem descrição cadastrada."}
       </p>
 
-      <div className="details-info-grid">
+      <div className={styles.infoGrid}>
         <div>
           <small>Plataforma</small>
           <strong>PS2</strong>
@@ -83,7 +78,7 @@ export function GameDetails({
         </div>
       </div>
 
-      <div className="actions">
+      <div className={styles.actions}>
         <button
           onClick={() => onPlay(game)}
           disabled={loading || checkingSession || hasActiveSession}
@@ -91,7 +86,7 @@ export function GameDetails({
           ▶ {loading ? "Carregando..." : "Iniciar jogo"}
         </button>
 
-        <button className="ghost" disabled>
+        <button className={styles.secondaryButton} disabled>
           Detalhes
         </button>
       </div>

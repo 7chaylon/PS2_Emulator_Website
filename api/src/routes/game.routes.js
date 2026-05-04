@@ -310,6 +310,137 @@ gameRoutes.post('/stop', requireAuth, async (req, res) => {
   }
 });
 
+gameRoutes.post('/input', requireAuth, async (req, res) => {
+  try {
+    const {
+      gameSessionId,
+      ps2Button,
+      inputCode,
+      state,
+    } = req.body;
+
+    if (!gameSessionId || !ps2Button || !inputCode || !state) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Dados de input incompletos.',
+      });
+    }
+
+    if (!['down', 'up'].includes(state)) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Estado de input inválido.',
+      });
+    }
+
+    const [rows] = await pool.query(
+      `
+      SELECT id, status
+      FROM game_sessions
+      WHERE id = ?
+        AND user_id = ?
+        AND status IN ('starting', 'running')
+      LIMIT 1
+      `,
+      [gameSessionId, req.session.user.id]
+    );
+
+    const session = rows[0];
+
+    if (!session) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Sessão ativa não encontrada.',
+      });
+    }
+
+    const hostResult = await callHost('/input', {
+      sessionId: gameSessionId,
+      ps2Button,
+      inputCode,
+      state,
+    });
+
+    if (!hostResult.ok) {
+      return res.status(502).json({
+        ok: false,
+        message: 'Host não conseguiu receber o input.',
+        host: hostResult.data,
+      });
+    }
+
+    return res.json({
+      ok: true,
+    });
+  } catch (error) {
+    console.error('Erro ao enviar input:', error);
+
+    return res.status(500).json({
+      ok: false,
+      message: 'Erro ao enviar input.',
+      error: error.message,
+    });
+  }
+});
+gameRoutes.post('/webrtc/offer', requireAuth, async (req, res) => {
+  try {
+    const { gameSessionId, offer } = req.body;
+
+    if (!gameSessionId || !offer) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Dados WebRTC incompletos.',
+      });
+    }
+
+    const [rows] = await pool.query(
+      `
+      SELECT id, status
+      FROM game_sessions
+      WHERE id = ?
+        AND user_id = ?
+        AND status IN ('starting', 'running')
+      LIMIT 1
+      `,
+      [gameSessionId, req.session.user.id]
+    );
+
+    const session = rows[0];
+
+    if (!session) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Sessão ativa não encontrada.',
+      });
+    }
+
+    const hostResult = await callHost('/webrtc/offer', {
+      sessionId: gameSessionId,
+      offer,
+    });
+
+    if (!hostResult.ok) {
+      return res.status(501).json({
+        ok: false,
+        message: 'WebRTC ainda não implementado no host.',
+        host: hostResult.data,
+      });
+    }
+
+    return res.json({
+      ok: true,
+      answer: hostResult.data.answer,
+    });
+  } catch (error) {
+    console.error('Erro na sinalização WebRTC:', error);
+
+    return res.status(500).json({
+      ok: false,
+      message: 'Erro na sinalização WebRTC.',
+      error: error.message,
+    });
+  }
+});
 gameRoutes.get('/session', requireAuth, async (req, res) => {
   try {
     const [rows] = await pool.query(

@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+import { ProfileDrawer } from "./ProfileDrawer";
+import styles from "./DashboardTopbar.module.css";
+
 export function DashboardTopbar({
   user,
   currentPage = "catalog",
@@ -10,119 +13,49 @@ export function DashboardTopbar({
 }) {
   const [profileOpen, setProfileOpen] = useState(false);
 
-  function openProfileMenu() {
-    setProfileOpen(true);
-  }
-
-  function closeProfileMenu() {
-    setProfileOpen(false);
-  }
-
-  function handleOpenControls() {
-    closeProfileMenu();
-    onOpenControls?.();
-  }
-
-  function handleLogout() {
-    closeProfileMenu();
-    onLogout?.();
-  }
-
   return (
     <>
-      <nav className="topbar">
-        <div className="brand-logo">
+      <nav className={styles.topbar}>
+        <div className={styles.brandLogo}>
           <strong>
             Sexo <span>10k</span>
           </strong>
         </div>
 
-        <div className="topbar-nav">
+        <div className={styles.nav}>
           {currentPage !== "catalog" && (
-            <button className="topbar-link" onClick={onBack}>
+            <button className={styles.link} onClick={onBack}>
               Catálogo
             </button>
           )}
 
           {currentPage === "catalog" && user.role === "admin" && (
-            <button className="topbar-link" onClick={onOpenAdmin}>
+            <button className={styles.link} onClick={onOpenAdmin}>
               Admin
             </button>
           )}
         </div>
 
-        <div className="user-menu">
+        <div className={styles.userMenu}>
           <button
-            className="user-avatar"
+            className={styles.avatar}
             title={user.name}
-            onClick={openProfileMenu}
+            onClick={() => setProfileOpen(true)}
           >
             {user.name?.charAt(0)?.toUpperCase() || "U"}
           </button>
         </div>
       </nav>
 
-      {profileOpen && (
-        <div className="profile-drawer-backdrop" onClick={closeProfileMenu}>
-          <aside
-            className="profile-drawer"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <header className="profile-drawer-header">
-              <button
-                className="profile-drawer-close"
-                onClick={closeProfileMenu}
-                title="Fechar"
-              >
-                ×
-              </button>
-
-              <div className="profile-drawer-avatar">
-                {user.name?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-
-              <div>
-                <h2>{user.name}</h2>
-                <p>{user.email}</p>
-              </div>
-            </header>
-
-            <div className="profile-drawer-actions">
-              <button type="button" onClick={handleOpenControls}>
-                <span>🎮</span>
-                <div>
-                  <strong>Mapeamento de controle</strong>
-                  <small>Configurar teclado ou controle Bluetooth</small>
-                </div>
-              </button>
-
-              {user.role === "admin" && currentPage !== "admin" && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeProfileMenu();
-                    onOpenAdmin?.();
-                  }}
-                >
-                  <span>⚙️</span>
-                  <div>
-                    <strong>Painel admin</strong>
-                    <small>Gerenciar jogos e catálogo</small>
-                  </div>
-                </button>
-              )}
-
-              <button type="button" className="profile-logout" onClick={handleLogout}>
-                <span>↪</span>
-                <div>
-                  <strong>Sair</strong>
-                  <small>Encerrar sua sessão</small>
-                </div>
-              </button>
-            </div>
-          </aside>
-        </div>
-      )}
+      <ProfileDrawer
+        user={user}
+        open={profileOpen}
+        currentPage={currentPage}
+        onClose={() => setProfileOpen(false)}
+        onOpenAdmin={onOpenAdmin}
+        onOpenControls={onOpenControls}
+        onLogout={onLogout}
+      />
     </>
   );
 }

@@ -1951,3 +1951,113 @@ body:has(.controls-page) {
     max-height: 300px;
   }
 }
+
+.webrtc-player {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(66, 230, 129, 0.08), transparent 34%),
+    #000;
+}
+
+.webrtc-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.webrtc-player-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  width: min(460px, calc(100vw - 40px));
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 10, 15, 0.72);
+  backdrop-filter: blur(16px);
+  text-align: center;
+}
+
+.webrtc-player-overlay strong {
+  display: block;
+  color: var(--green);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.webrtc-player-overlay p {
+  margin: 8px 0 14px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+}
+
+.webrtc-player-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.webrtc-player-actions button {
+  min-height: 38px;
+  padding: 9px 13px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.game-mode-status-panel {
+  position: absolute;
+  z-index: 2;
+  top: 28px;
+  left: 28px;
+  max-width: 360px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 10, 15, 0.68);
+  backdrop-filter: blur(16px);
+}
+
+.game-mode-status-panel img {
+  width: 58px;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  margin: 0;
+  opacity: 1;
+}
+
+.game-mode-status-panel span {
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.game-mode-status-panel h1 {
+  margin: 4px 0;
+  font-size: 20px;
+  letter-spacing: -0.04em;
+}
+
+.game-mode-status-panel p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+}
+
+.game-mode-status-panel small {
+  display: block;
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 11px;
+}

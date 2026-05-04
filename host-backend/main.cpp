@@ -383,7 +383,40 @@ int main()
         }
 
         res.set_content("Game started", "text/plain"); });
+    server.Post("/input", [](const httplib::Request &req, httplib::Response &res)
+                {
+    addCorsHeaders(res);
 
+    std::string sessionId = req.get_param_value("sessionId");
+    std::string ps2Button = req.get_param_value("ps2Button");
+    std::string inputCode = req.get_param_value("inputCode");
+    std::string state = req.get_param_value("state");
+
+    if (sessionId.empty() || ps2Button.empty() || inputCode.empty() || state.empty()) {
+        res.status = 400;
+        res.set_content("{\"ok\":false,\"message\":\"Missing input data\"}", "application/json");
+        return;
+    }
+
+    std::cout
+        << "[INPUT] session=" << sessionId
+        << " ps2Button=" << ps2Button
+        << " inputCode=" << inputCode
+        << " state=" << state
+        << "\n";
+
+    res.set_content("{\"ok\":true}", "application/json"); });
+    server.Post("/webrtc/offer", [](const httplib::Request &req, httplib::Response &res)
+                {
+    addCorsHeaders(res);
+
+    std::cout << "[WEBRTC] Offer recebida, mas WebRTC ainda nao implementado no host.\n";
+
+    res.status = 501;
+    res.set_content(
+        "{\"ok\":false,\"message\":\"WebRTC ainda nao implementado no host.\"}",
+        "application/json"
+    ); });
     server.Post("/stop", [](const httplib::Request &req, httplib::Response &res)
                 {
         addCorsHeaders(res);

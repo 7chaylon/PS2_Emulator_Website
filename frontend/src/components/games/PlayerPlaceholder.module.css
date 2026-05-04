@@ -1,0 +1,23 @@
+.placeholder {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(66, 230, 129, 0.12),
+      transparent 42%
+    ),
+    rgba(0, 0, 0, 0.18);
+  text-align: center;
+}
+
+.placeholder p {
+  max-width: 360px;
+  margin: 8px auto 0;
+  color: var(--muted);
+}

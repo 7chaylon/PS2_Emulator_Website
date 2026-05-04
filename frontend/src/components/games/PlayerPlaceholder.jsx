@@ -1,8 +1,10 @@
-import React from 'react';
+import React from "react";
+
+import styles from "./PlayerPlaceholder.module.css";
 
 export function PlayerPlaceholder() {
   return (
-    <div className="player-placeholder">
+    <div className={styles.placeholder}>
       <div>
         <strong>Área do WebRTC</strong>
         <p>

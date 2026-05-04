@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { getAssetUrl } from "../../lib/api";
+import styles from "./AdminGameForm.module.css";
 
 export function AdminGameForm({
   form,
@@ -25,9 +26,9 @@ export function AdminGameForm({
   }
 
   return (
-    <aside className="admin-editor">
-      <div className="admin-editor-header">
-        <div className="admin-editor-cover">
+    <aside className={styles.editor}>
+      <div className={styles.header}>
+        <div className={styles.cover}>
           {coverPreview ? (
             <img src={coverPreview} alt={form.title || "Capa do jogo"} />
           ) : (
@@ -38,20 +39,20 @@ export function AdminGameForm({
         <div>
           <small>{editingGameId ? "Editar jogo" : "Novo jogo"}</small>
           <h2>{form.title || "Adicionar jogo"}</h2>
-          <p className="muted">PlayStation 2</p>
+          <p>PlayStation 2</p>
         </div>
       </div>
 
       {!editingGameId && (
-        <section className="iso-upload-box">
-          <span className="upload-label">Upload automático</span>
+        <section className={styles.uploadBox}>
+          <span className={styles.uploadLabel}>Upload automático</span>
 
           <p>
             Envie uma ISO para o backend salvar na pasta de jogos, detectar o
             serial, baixar a capa e cadastrar no catálogo.
           </p>
 
-          <label className="iso-file-field">
+          <label className={styles.fileField}>
             <input
               type="file"
               accept=".iso"
@@ -67,30 +68,33 @@ export function AdminGameForm({
 
           <button
             type="button"
-            className="upload-button"
+            className={styles.uploadButton}
             onClick={handleUploadIso}
             disabled={uploading || loading || !selectedIso}
           >
             {uploading ? "Enviando ISO..." : "Enviar ISO e cadastrar"}
           </button>
+
           {uploading && (
-            <div className="upload-progress-wrap">
-              <div className="upload-progress">
+            <div className={styles.progressWrap}>
+              <div className={styles.progress}>
                 <div
-                  className="upload-progress-bar"
+                  className={styles.progressBar}
                   style={{ width: `${uploadProgress}%` }}
                 />
 
                 <span>{uploadProgress}%</span>
               </div>
 
-              {uploadStatus && <p className="upload-status">{uploadStatus}</p>}
+              {uploadStatus && (
+                <p className={styles.uploadStatus}>{uploadStatus}</p>
+              )}
             </div>
           )}
         </section>
       )}
 
-      <form className="admin-form" onSubmit={onSubmit}>
+      <form className={styles.form} onSubmit={onSubmit}>
         <label>
           Título
           <input
@@ -118,7 +122,7 @@ export function AdminGameForm({
           <input
             value={form.isoPath}
             onChange={(event) => onChange("isoPath", event.target.value)}
-            placeholder="C:\Users\chaylon\Desktop\ps2 emulator\jogo\Jogo.iso"
+            placeholder={String.raw`C:\Users\chaylon\Desktop\ps2 emulator\jogo\Jogo.iso`}
             required
           />
         </label>
@@ -142,7 +146,7 @@ export function AdminGameForm({
           />
         </label>
 
-        <label className="checkbox-field">
+        <label className={styles.checkboxField}>
           <span>Ativo</span>
           <input
             type="checkbox"
@@ -151,10 +155,10 @@ export function AdminGameForm({
           />
         </label>
 
-        <div className="admin-form-actions">
+        <div className={styles.actions}>
           <button
             type="button"
-            className="ghost"
+            className={styles.secondaryButton}
             onClick={onCancel}
             disabled={loading || uploading}
           >

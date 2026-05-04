@@ -1,7 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import { GameCoverCard } from './GameCoverCard';
-import { MessageBox } from '../ui/MessageBox';
+import { GameCoverCard } from "./GameCoverCard";
+import { MessageBox } from "../ui/MessageBox";
+import styles from "./GameCatalog.module.css";
 
 export function GameCatalog({
   games,
@@ -10,7 +11,7 @@ export function GameCatalog({
   onSelectGame,
 }) {
   return (
-    <div className="games-grid">
+    <div className={styles.grid}>
       {games.map((game) => (
         <GameCoverCard
           key={game.id}
@@ -21,9 +22,7 @@ export function GameCatalog({
       ))}
 
       {!loadingGames && games.length === 0 && (
-        <MessageBox variant="info">
-          Nenhum jogo cadastrado ainda.
-        </MessageBox>
+        <MessageBox variant="info">Nenhum jogo cadastrado ainda.</MessageBox>
       )}
     </div>
   );

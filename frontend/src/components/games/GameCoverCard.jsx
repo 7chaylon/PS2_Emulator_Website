@@ -1,6 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import { getAssetUrl } from '../../lib/api';
+import { getAssetUrl } from "../../lib/api";
+import styles from "./GameCoverCard.module.css";
 
 export function GameCoverCard({ game, selected, onClick }) {
   const coverUrl = getAssetUrl(game.coverUrl);
@@ -8,12 +9,12 @@ export function GameCoverCard({ game, selected, onClick }) {
   return (
     <button
       type="button"
-      className={`game-card ${selected ? 'selected' : ''}`}
+      className={`${styles.card} ${selected ? styles.selected : ""}`}
       onClick={onClick}
       title={game.title}
       aria-label={`Ver detalhes de ${game.title}`}
     >
-      <div className="game-cover">
+      <div className={styles.cover}>
         {coverUrl ? (
           <img src={coverUrl} alt={game.title} />
         ) : (
@@ -21,9 +22,7 @@ export function GameCoverCard({ game, selected, onClick }) {
         )}
       </div>
 
-      <span className="game-title-small">
-        {game.title}
-      </span>
+      <span className={styles.title}>{game.title}</span>
     </button>
   );
 }
