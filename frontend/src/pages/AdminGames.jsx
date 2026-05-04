@@ -15,7 +15,7 @@ const emptyForm = {
   isActive: true,
 };
 
-export default function AdminGames({ user, onBack, onLogout }) {
+export default function AdminGames({ user, onBack, onLogout, onOpenControls }) {
   const [games, setGames] = useState([]);
   const [uploadStatus, setUploadStatus] = useState("");
   const [form, setForm] = useState(emptyForm);
@@ -229,6 +229,7 @@ export default function AdminGames({ user, onBack, onLogout }) {
         currentPage="admin"
         onBack={onBack}
         onLogout={logout}
+        onOpenControls={onOpenControls}
       />
 
       <section className="admin-page-shell">

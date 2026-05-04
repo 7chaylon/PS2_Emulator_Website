@@ -196,6 +196,7 @@ export default function Home({ user, onLogout, onOpenAdmin, onOpenControls }) {
         currentPage="catalog"
         onLogout={logout}
         onOpenAdmin={onOpenAdmin}
+        onOpenControls={onOpenControls}
       />
 
       <section className="catalog-header">

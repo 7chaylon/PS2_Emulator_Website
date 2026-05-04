@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useGamepadMapper } from "../hooks/useGamepadMapper";
 import { api } from "../lib/api";
+import ps2ControllerImage from "../assets/ps2-controller.png";
 
 const CONTROL_GROUPS_LEFT = [
   {
@@ -319,37 +320,13 @@ export default function ControlsSetup({ onBack }) {
               ))}
             </div>
 
-            <div className="ps2-controller">
-              <div className="controller-body">
-                <span className="sony-text">SONY</span>
-
-                <div className="controller-left">
-                  <div className="dpad">
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                  </div>
-                  <div className="analog-stick left-stick" />
-                </div>
-
-                <div className="controller-center">
-                  <div className="small-button" />
-                  <div className="analog-light" />
-                  <div className="small-button" />
-                </div>
-
-                <div className="controller-right">
-                  <div className="face-buttons">
-                    <span className="triangle">△</span>
-                    <span className="square">□</span>
-                    <span className="circle">○</span>
-                    <span className="cross">×</span>
-                  </div>
-                  <div className="analog-stick right-stick" />
-                </div>
-              </div>
-            </div>
+<div className="ps2-controller-image-wrap">
+  <img
+    src={ps2ControllerImage}
+    alt="Controle PlayStation 2"
+    className="ps2-controller-image"
+  />
+</div>
 
             <div className="controls-tip">
               Dica: clique em qualquer campo e pressione uma tecla ou botão do controle.

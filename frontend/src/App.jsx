@@ -49,12 +49,13 @@ export default function App() {
     );
   }
 
-  if (user && page === 'admin') {
+  if (user && page === "admin") {
     return (
       <AdminGames
         user={user}
-        onBack={() => setPage('home')}
+        onBack={() => setPage("home")}
         onLogout={handleLogout}
+        onOpenControls={() => setPage("controls")}
       />
     );
   }
@@ -64,8 +65,8 @@ export default function App() {
       <Home
         user={user}
         onLogout={handleLogout}
-        onOpenAdmin={() => setPage('admin')}
-        onOpenControls={() => setPage('controls')}
+        onOpenAdmin={() => setPage("admin")}
+        onOpenControls={() => setPage("controls")}
       />
     );
   }

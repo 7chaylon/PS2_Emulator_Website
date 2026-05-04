@@ -1498,256 +1498,456 @@ body.game-mode-active .dashboard-page {
   place-items: center;
 }
 
-.controller-body {
-  position: relative;
-  width: min(640px, 100%);
-  height: 270px;
-  border-radius: 42% 42% 46% 46%;
-  background:
-    radial-gradient(circle at 35% 78%, rgba(255,255,255,0.12), transparent 12%),
-    radial-gradient(circle at 65% 78%, rgba(255,255,255,0.12), transparent 12%),
-    linear-gradient(180deg, #252932, #07090d 80%);
-  border: 1px solid rgba(255,255,255,0.09);
-  box-shadow:
-    inset 0 20px 30px rgba(255,255,255,0.05),
-    inset 0 -40px 60px rgba(0,0,0,0.65),
-    0 40px 100px rgba(0,0,0,0.65);
-}
-
-.controller-body::before,
-.controller-body::after {
-  content: "";
-  position: absolute;
-  width: 190px;
-  height: 230px;
-  bottom: -75px;
-  background: linear-gradient(180deg, #191d24, #07090d);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: inset 0 -30px 45px rgba(0,0,0,0.65);
-}
-
-.controller-body::before {
-  left: 45px;
-  border-radius: 40% 35% 55% 45%;
-  transform: rotate(18deg);
-}
-
-.controller-body::after {
-  right: 45px;
-  border-radius: 35% 40% 45% 55%;
-  transform: rotate(-18deg);
-}
-
-.sony-text {
-  position: absolute;
-  top: 58px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(255,255,255,0.5);
-  font-size: 34px;
-  letter-spacing: 0.08em;
-  font-weight: 800;
-}
-
-.controller-left,
-.controller-right,
-.controller-center {
-  position: absolute;
-  z-index: 3;
-}
-
-.controller-left {
-  left: 88px;
-  top: 80px;
-}
-
-.controller-right {
-  right: 95px;
-  top: 70px;
-}
-
-.controller-center {
-  left: 50%;
-  top: 120px;
-  transform: translateX(-50%);
+.ps2-controller-image-wrap {
+  width: 100%;
+  min-height: 380px;
   display: grid;
-  grid-template-columns: 36px 40px 36px;
+  place-items: center;
+  position: relative;
+}
+
+.ps2-controller-image {
+  width: min(760px, 100%);
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 34px 90px rgba(0, 0, 0, 0.75))
+    drop-shadow(0 0 34px rgba(66, 230, 129, 0.08));
+  opacity: 0.96;
+  user-select: none;
+  pointer-events: none;
+}
+.logout-link {
+  display: none;
+}
+
+.profile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.profile-drawer {
+  width: min(380px, 100%);
+  height: 100vh;
+  padding: 24px;
+  border-left: 1px solid var(--line);
+  background:
+    radial-gradient(circle at top right, rgba(66, 230, 129, 0.1), transparent 34%),
+    rgba(8, 10, 15, 0.96);
+  box-shadow: -28px 0 90px rgba(0, 0, 0, 0.55);
+  animation: profileDrawerIn 0.18s ease-out;
+}
+
+@keyframes profileDrawerIn {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.profile-drawer-header {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.profile-drawer-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--muted-strong);
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--line);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.profile-drawer-avatar {
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--green);
+  border: 1px solid var(--green-line);
+  background: var(--green-soft);
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.profile-drawer-header h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.04em;
+}
+
+.profile-drawer-header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.profile-drawer-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.profile-drawer-actions button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  text-align: left;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.profile-drawer-actions button:hover {
+  filter: none;
+  border-color: var(--green-line);
+  background: rgba(66, 230, 129, 0.07);
+}
+
+.profile-drawer-actions button > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.profile-drawer-actions strong {
+  display: block;
+  font-size: 15px;
+}
+
+.profile-drawer-actions small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.profile-drawer-actions .profile-logout {
+  margin-top: 8px;
+  color: #ffadb7;
+  border-color: rgba(255, 95, 115, 0.22);
+}
+
+.profile-drawer-actions .profile-logout:hover {
+  border-color: rgba(255, 95, 115, 0.42);
+  background: rgba(255, 95, 115, 0.1);
+}
+/* ============================= */
+/* Controls setup - versão compacta/minimalista */
+/* ============================= */
+
+.controls-page {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 24px 36px;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(66, 230, 129, 0.075), transparent 28%),
+    radial-gradient(circle at 86% 20%, rgba(84, 169, 255, 0.06), transparent 30%),
+    #080a0f;
+}
+
+.controls-shell {
+  width: min(1500px, 100%);
+  height: calc(100vh - 48px);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+}
+
+.controls-header {
+  margin: 0;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.controls-header h1 {
+  margin: 0;
+  font-size: clamp(30px, 3vw, 44px);
+  letter-spacing: -0.065em;
+}
+
+.controls-header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.controls-status {
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.controls-message {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.controls-layout {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 270px minmax(420px, 1fr) 270px;
   gap: 16px;
   align-items: center;
 }
 
-.dpad {
-  width: 124px;
-  height: 124px;
-  position: relative;
+.controls-column {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
 }
 
-.dpad span {
-  position: absolute;
-  background: #0b0d11;
-  border: 2px solid rgba(255,255,255,0.1);
-  box-shadow: inset 0 8px 12px rgba(255,255,255,0.05);
+.controls-panel {
+  min-height: unset;
+  padding: 13px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at top left, rgba(66, 230, 129, 0.045), transparent 44%),
+    rgba(255, 255, 255, 0.03);
+  box-shadow: none;
 }
 
-.dpad span:nth-child(1),
-.dpad span:nth-child(2) {
-  width: 42px;
+.controls-panel h2 {
+  margin: 0 0 10px;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--muted-strong);
+}
+
+.controls-panel h2 span {
+  width: 8px;
+  height: 8px;
+}
+
+.controls-panel-items {
+  gap: 6px;
+}
+
+.control-bind-row {
+  min-height: 28px;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.control-bind-row strong,
+.center-control-box strong {
+  min-width: 42px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.control-bind-row:hover strong,
+.center-control-box:hover strong {
+  border-color: var(--green-line);
+}
+
+.controller-stage {
+  min-height: 0;
   height: 100%;
-  left: 41px;
-  border-radius: 12px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
 }
 
-.dpad span:nth-child(2) {
-  transform: rotate(90deg);
+.center-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
-.dpad span:nth-child(3),
-.dpad span:nth-child(4) {
-  display: none;
+.center-control-box {
+  gap: 6px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.028);
 }
 
-.face-buttons {
-  width: 138px;
-  height: 138px;
-  position: relative;
+.center-control-box span {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 800;
 }
 
-.face-buttons span {
-  position: absolute;
-  width: 48px;
-  height: 48px;
+.ps2-controller-image-wrap {
+  min-height: 0;
+  height: 100%;
   display: grid;
   place-items: center;
-  border-radius: 999px;
-  color: white;
-  background: #0b0d11;
-  border: 2px solid rgba(255,255,255,0.1);
-  font-size: 28px;
-  font-weight: 900;
+  padding: 0 8px;
 }
 
-.triangle {
-  top: 0;
-  left: 45px;
-  color: #4cff9b !important;
-}
-
-.square {
-  top: 45px;
-  left: 0;
-  color: #ff6bea !important;
-}
-
-.circle {
-  top: 45px;
-  right: 0;
-  color: #ff5c6f !important;
-}
-
-.cross {
-  bottom: 0;
-  left: 45px;
-  color: #61a8ff !important;
-}
-
-.analog-stick {
-  position: absolute;
-  width: 92px;
-  height: 92px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), transparent 28%),
-    radial-gradient(circle, #30343c, #050609 70%);
-  border: 8px solid #050609;
-  box-shadow: inset 0 8px 18px rgba(255,255,255,0.08), 0 10px 20px rgba(0,0,0,0.55);
-}
-
-.left-stick {
-  left: 128px;
-  top: 170px;
-}
-
-.right-stick {
-  right: 118px;
-  top: 180px;
-}
-
-.small-button {
-  width: 34px;
-  height: 18px;
-  border-radius: 6px;
-  background: #07090d;
-  border: 1px solid rgba(255,255,255,0.12);
-}
-
-.analog-light {
-  width: 34px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--green);
-  box-shadow: 0 0 16px rgba(66, 230, 129, 0.6);
+.ps2-controller-image {
+  width: min(640px, 100%);
+  max-height: 330px;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 26px 70px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px rgba(66, 230, 129, 0.08));
 }
 
 .controls-tip {
-  width: fit-content;
-  max-width: 100%;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 9px 13px;
+  border-radius: 11px;
+  font-size: 12px;
   color: #83bfff;
-  border-radius: 12px;
-  border: 1px solid rgba(84, 169, 255, 0.24);
-  background: rgba(84, 169, 255, 0.08);
-  font-size: 14px;
 }
 
 .controls-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: center;
-  margin-top: 28px;
-  padding-top: 18px;
+  margin: 0;
+  padding: 14px 0 0;
   border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls-actions button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
 }
 
 .controls-actions > div {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
-@media (max-width: 1200px) {
+/* impede scroll global quando estiver nessa tela */
+body:has(.controls-page) {
+  overflow: hidden;
+}
+
+/* notebook/telas menores */
+@media (max-height: 820px) {
+  .controls-page {
+    padding: 18px 28px;
+  }
+
+  .controls-shell {
+    height: calc(100vh - 36px);
+    gap: 12px;
+  }
+
+  .controls-header h1 {
+    font-size: 34px;
+  }
+
+  .controls-header p {
+    font-size: 13px;
+  }
+
+  .controls-layout {
+    grid-template-columns: 250px minmax(380px, 1fr) 250px;
+    gap: 12px;
+  }
+
+  .controls-panel {
+    padding: 11px 12px;
+  }
+
+  .control-bind-row {
+    min-height: 25px;
+    font-size: 11px;
+  }
+
+  .control-bind-row strong,
+  .center-control-box strong {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .ps2-controller-image {
+    max-height: 285px;
+  }
+
+  .controls-actions {
+    padding-top: 10px;
+  }
+
+  .controls-actions button {
+    min-height: 38px;
+    padding: 9px 14px;
+  }
+}
+
+/* celular/tablet ainda pode rolar, porque não cabe tudo */
+@media (max-width: 980px) {
+  .controls-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+  }
+
+  body:has(.controls-page) {
+    overflow: auto;
+  }
+
+  .controls-shell {
+    height: auto;
+  }
+
   .controls-layout {
     grid-template-columns: 1fr;
   }
 
   .controls-column {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   }
 
-  .ps2-controller {
-    height: 330px;
-  }
-}
-
-@media (max-width: 760px) {
-  .controls-page {
-    padding: 18px;
-  }
-
-  .controls-shell {
-    padding: 22px;
-  }
-
-  .controls-header,
-  .controls-actions {
-    display: grid;
-  }
-
-  .controls-actions > div {
-    display: grid;
-  }
-
-  .center-controls {
-    grid-template-columns: 1fr;
+  .ps2-controller-image {
+    max-height: 300px;
   }
 }
